@@ -1,0 +1,81 @@
+.page {
+    position: absolute;
+    top: 0;
+    width: 100vw;
+    display:flex;
+    flex-direction: column;
+    justify-content: center;
+    height: fit-content;
+  }
+  
+  .banner {
+    display: flex;
+    align-items: center;
+    background-color: rgb(127, 188, 244);
+    position: relative;
+    justify-content: space-between;
+    align-content: center;
+    flex-wrap: wrap;
+  }
+  
+  .logo {
+    min-width: 400px;
+  }
+  
+  .title {
+    min-width: 400px;
+    position:relative;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+  
+  h1 a{
+    color: black;
+    font-size: larger;
+    font-weight: 800;
+    position: relative;
+    text-align: center;
+    padding: 10px 40px 10px 40px;
+    border-radius: 30px;
+    background-color: #ffffff;
+    text-wrap: nowrap;
+  }
+  
+  h1 a:hover{
+    color:#ffdd00;
+    background-color: #aa0000;
+  }
+  
+  .menuPane {
+    min-width: 400px;
+    position: relative;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+  
+  .menuPane button:hover {
+    background-color: rgb(72, 119, 164);
+  }
+  .menuPane button {
+    position: relative;
+    margin: 10px;
+  }
+  
+  .dropdown {
+    width: 100dvw;
+    position: relative;
+    background-color:rgb(72, 119, 164);
+  }
+  
+  .dropdown li {
+    background-color: transparent;
+  }
+
+  #accountButton {
+    display: flex;
+    flex-direction: column;
+  }
+
+  
