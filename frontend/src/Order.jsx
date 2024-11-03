@@ -7,6 +7,7 @@ import IngredientCard from "./IngredientCard";
 
 function Order() {
     return (
+        //TODO: every pizza should have their own handlePizzaClick function
         <>
             <Banner />
             <div className="w-screen h-full bg-slate-200 flex">
@@ -14,37 +15,33 @@ function Order() {
                     <h1 className="font-bold text-4xl px-5">
                         Choose your meal...
                     </h1>
-                    <div className="p-5">
+                    <div className="p-5 grid grid-cols-3">
                         <Pizza
-                            name="Margharita"
+                            name="Margarita"
                             ingredients={"Tomato, Mozzarella, Basil"}
+                            price={10.99}
                         />
                         <Pizza
-                            name="Margharita"
+                            name="Margarita"
                             ingredients={"Tomato, Mozzarella, Basil"}
+                            price={10.99}
                         />
                         <Pizza
-                            name="Margharita"
+                            name="Margarita"
                             ingredients={"Tomato, Mozzarella, Basil"}
+                            price={10.99}
                         />
                         <Pizza
-                            name="Margharita"
+                            name="Margarita"
                             ingredients={"Tomato, Mozzarella, Basil"}
+                            price={10.99}
                         />
                         <Pizza
-                            name="Margharita"
+                            name="Margarita"
                             ingredients={"Tomato, Mozzarella, Basil"}
+                            price={10.99}
                         />
                     </div>
-                </div>
-                <div className="m-5">
-                    <PizzaCard
-                        name="Margharita"
-                        ingredients={"Tomato, Mozzarella, Basil"}
-                    />
-                </div>
-                <div>
-                    <IngredientCard />
                 </div>
             </div>
         </>

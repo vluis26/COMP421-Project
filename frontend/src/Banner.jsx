@@ -6,27 +6,49 @@ import cartIcon from "./assets/cart_icon_gray.svg";
 import cartIcon2 from "./assets/cart_icon_white.svg";
 import personIcon from "./assets/person_icon_gray.svg";
 import personIcon2 from "./assets/person_icon_white.svg";
+import { Truck } from "lucide-react";
+import { ShoppingCart } from "lucide-react";
 import "./Banner.css";
 import { Link } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 
-function Banner() {
+const Banner = ({ employee }) => {
+    const navigate = useNavigate();
+    const handleCartClick = () => {
+        navigate("/Cart");
+    };
+    const handleHomeClick = () => {
+        navigate("/order");
+    };
     return (
         <>
             <div className="flex bg-red-700 justify-between h-28 items-center">
                 <img src={bigRatBanner} />
-                <p className=" font-bold text-yellow-200 text-5xl drop-shadow-md">
+                <p
+                    className=" font-bold text-yellow-200 text-5xl drop-shadow-md hover:cursor-pointer"
+                    onClick={handleHomeClick}
+                >
                     Big Rat NYC Pizza
                 </p>
-                <div className="flex fustify-between">
-                    <div className="rounded-lg bg-yellow-500 px-5 text-lg mx-5">
-                        log in
-                    </div>
-                    <div className="mx-5">
-                        <img src={cartIcon} />
-                    </div>
+                <div className="flex fustify-between items-start">
+                    <Truck
+                        stroke="#fef08a"
+                        size={46}
+                        className="hover:cursor-pointer"
+                    />
+                    {!employee && (
+                        <div className="mx-8 items-center">
+                            <ShoppingCart
+                                onClick={handleCartClick}
+                                className="hover:cursor-pointer"
+                                stroke="#fef08a"
+                                size={40}
+                            />
+                        </div>
+                    )}
                 </div>
             </div>
         </>
     );
-}
+};
 export default Banner;
