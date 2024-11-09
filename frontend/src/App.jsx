@@ -8,6 +8,7 @@ import Order from "./Order";
 import Cart from "./Cart";
 import Extras from "./Extras";
 import EmployeeOrder from "./EmployeeOrder";
+import OrderTracker from "./OrderTracker";
 
 function App() {
     return (
@@ -21,6 +22,7 @@ function App() {
                 <Route path="/cart" element={<Cart />} />
                 <Route path="/order/extras" element={<Extras />} />
                 <Route path="/employee/order" element={<EmployeeOrder />} />
+                <Route path="/orderTracker" element={<OrderTracker />} />
             </Routes>
         </>
     );
