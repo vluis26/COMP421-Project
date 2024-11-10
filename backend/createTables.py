@@ -12,8 +12,7 @@ def create_tables():
                 CREATE TABLE IF NOT EXISTS Customers ( 
                     cid INTEGER PRIMARY KEY AUTO_INCREMENT, 
                     name VARCHAR(40) NOT NULL, 
-                    email VARCHAR(40) UNIQUE NOT NULL,
-                    phoneNumber VARCHAR(15)
+                    phoneNumber VARCHAR(15),
                     username VARCHAR(20) UNIQUE,
                     FOREIGN KEY (username) REFERENCES Users(username) ON DELETE SET NULL
                 );"""
@@ -24,13 +23,18 @@ def create_tables():
                     name VARCHAR(40) NOT NULL,
                     position VARCHAR(30),
                     hireDate DATE
+                    username VARCHAR(20) UNIQUE,
+                    FOREIGN KEY (username) REFERENCES Users(username) ON DELETE SET NULL
                 );"""
 
             q3 = """
                 CREATE TABLE IF NOT EXISTS Managers (
                     mid INTEGER PRIMARY KEY AUTO_INCREMENT,
                     name VARCHAR(40) NOT NULL,
+                    position VARCHAR(30),
                     hireDate DATE
+                    username VARCHAR(20) UNIQUE,
+                    FOREIGN KEY (username) REFERENCES Users(username) ON DELETE SET NULL
                 );"""
 
             q4 = """
@@ -38,7 +42,7 @@ def create_tables():
                     iid INTEGER PRIMARY KEY AUTO_INCREMENT,
                     name VARCHAR(40) NOT NULL,
                     quantity INT NOT NULL,
-                    type ARCHAR(20) NOT NULL,
+                    type VARCHAR(20) NOT NULL,
                     price DECIMAL(10, 2)
                 );"""
 
@@ -47,17 +51,15 @@ def create_tables():
                     oid INTEGER PRIMARY KEY AUTO_INCREMENT,
                     order_date DATE,
                     customer_id INT,
-                    employee_id INTEGER,
                     status VARCHAR(20),
                     total_amount DECIMAL(10, 2) NOT NULL DEFAULT 0.00,
                     FOREIGN KEY (customer_id) REFERENCES Customers(cid) ON DELETE CASCADE,
-                    FOREIGN KEY (employee_id) REFERENCES Employees(eid) ON DELETE SET NULL
                 );"""
 
             q6 = """
                 CREATE TABLE IF NOT EXISTS Users (
                     username VARCHAR(20) PRIMARY KEY,
-                    password VARCHAR(20) NOT NULL,
+                    password VARCHAR(20) UNIQUE NOT NULL,
                     email VARCHAR(100),
                     createdAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP
                 );"""
