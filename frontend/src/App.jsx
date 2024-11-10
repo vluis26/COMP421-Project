@@ -9,6 +9,7 @@ import Cart from "./Cart";
 import Extras from "./Extras";
 import EmployeeOrder from "./EmployeeOrder";
 import OrderTracker from "./OrderTracker";
+import Inventory from "./Inventory";
 
 function App() {
     return (
@@ -23,6 +24,7 @@ function App() {
                 <Route path="/order/extras" element={<Extras />} />
                 <Route path="/employee/order" element={<EmployeeOrder />} />
                 <Route path="/orderTracker" element={<OrderTracker />} />
+                <Route path="/employee/inventory" element={<Inventory />} />
             </Routes>
         </>
     );

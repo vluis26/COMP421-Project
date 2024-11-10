@@ -20,6 +20,9 @@ const Banner = ({ employee }) => {
     const handleHomeClick = () => {
         navigate("/order");
     };
+    const handleTruckClick = () => {
+        navigate("/orderTracker");
+    };
     return (
         <>
             <div className="flex bg-red-700 justify-between h-28 items-center">
@@ -31,11 +34,14 @@ const Banner = ({ employee }) => {
                     Big Rat NYC Pizza
                 </p>
                 <div className="flex fustify-between items-start">
-                    <Truck
-                        stroke="#fef08a"
-                        size={46}
-                        className="hover:cursor-pointer"
-                    />
+                    <div className="mx-3">
+                        <Truck
+                            stroke="#fef08a"
+                            size={46}
+                            className="hover:cursor-pointer"
+                            onClick={handleTruckClick}
+                        />
+                    </div>
                     {!employee && (
                         <div className="mx-8 items-center">
                             <ShoppingCart
