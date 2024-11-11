@@ -10,7 +10,7 @@ lerna-debug.log*
 node_modules
 dist
 dist-ssr
-venv
+backend/venv
 *.local
 
 # Editor directories and files
