@@ -4,7 +4,9 @@ app = Flask(__name__)
 
 users = [
     {"id": 1, "name": "Alice", "age": 25},
-    {"id": 2, "name": "Lucas", "age": 21}
+    {"id": 2, "name": "Lucas", "age": 21},
+    {"id": 3, "name": "Mark", "age": 19}
+
 ]
 
 @app.route("/users", methods={"GET"})
