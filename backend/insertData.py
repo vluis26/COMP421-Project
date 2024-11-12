@@ -1,7 +1,7 @@
 import pymysql
 from db import get_connection
 
-db = get_connection(create_db=False)
+db = get_connection()
 cursor = db.cursor()
 
 ingredients = [

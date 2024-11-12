@@ -1,14 +1,23 @@
 import pymysql
 
+from createTables import create_tables
+
+
 def get_connection():
     connection = pymysql.connect(
         host='localhost',    
         user='root', 
-        password='your_password'
+        password='your_passwd'
     )
     create_database(connection)
     
+    # Select the database before proceeding
+    connection.select_db('pizza_ordering')
+    
+    create_tables(connection)
+    
     return connection
+
 
 def create_database(connection):
     try:
@@ -18,5 +27,4 @@ def create_database(connection):
             print("Database created successfully!")
     except Exception as e:
         print(f"Error occurred while creating database: {e}")
-    finally:
-        connection.close()
+    
