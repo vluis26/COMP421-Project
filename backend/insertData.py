@@ -1,7 +1,9 @@
 import pymysql
+from createTables import create_tables
 from db import get_connection
 
 db = get_connection()
+create_tables(db)
 cursor = db.cursor()
 
 ingredients = [

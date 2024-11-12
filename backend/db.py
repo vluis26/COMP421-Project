@@ -14,7 +14,7 @@ def get_connection():
     # Select the database before proceeding
     connection.select_db('pizza_ordering')
     
-    create_tables(connection)
+
     
     return connection
 
