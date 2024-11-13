@@ -1,3 +1,4 @@
+import axios from "axios";
 import { useState } from "react";
 import "./Login.css";
 import ratIcon from "./assets/person_icon_white.svg";
@@ -7,17 +8,31 @@ function Login() {
     const [username, setUsername] = useState("");
     const [password, setPassword] = useState("");
     const navigate = useNavigate();
-    const handleSubmit = (event) => {
+
+    const handleSubmit = async (event) => {
         event.preventDefault();
-        console.log("Logging in with:", { username, password });
-        navigate("/order");
+        try {
+            const response = await axios.post("http://127.0.0.1:5000/login", {
+                username,
+                password,
+            });
+
+            console.log(response.data.message);
+            if (response.data.message === "Login successful") {
+                navigate("/order");
+            } else {
+                console.log("Login failed");
+            }
+        } catch (error) {
+            console.error("Error during login:", error.response ? error.response.data : error.message);
+        }
     };
 
     return (
         <div className="flex flex-col justify-center w-screen h-full bg-gradient-to-b from-red-600 to-red-800">
             <div className="flex justify-center">
-                <div className=" flex flex-col justify-center m-5">
-                    <img src={ratIcon} className="h-36" />
+                <div className="flex flex-col justify-center m-5">
+                    <img src={ratIcon} className="h-36" alt="Icon" />
                     <h1 className="text-5xl font-bold text-yellow-500 drop-shadow-lg">
                         Welcome back Rat!
                     </h1>
@@ -26,18 +41,16 @@ function Login() {
             <div>
                 <form
                     onSubmit={handleSubmit}
-                    className=" flex justify-center  "
+                    className="flex justify-center"
                 >
                     <div className="flex justify-center flex-col border-black">
-                        <div className="m-5 ">
+                        <div className="m-5">
                             <label className="flex items-center">
                                 <p className="px-3">Username:</p>
                                 <input
                                     type="text"
                                     value={username}
-                                    onChange={(e) =>
-                                        setUsername(e.target.value)
-                                    }
+                                    onChange={(e) => setUsername(e.target.value)}
                                     required
                                     className="rounded-full h-14 w-96 p-5 text-sm font-normal"
                                 />
@@ -49,9 +62,7 @@ function Login() {
                                 <input
                                     type="password"
                                     value={password}
-                                    onChange={(e) =>
-                                        setPassword(e.target.value)
-                                    }
+                                    onChange={(e) => setPassword(e.target.value)}
                                     required
                                     className="rounded-full h-14 w-96 p-5 text-sm font-normal"
                                 />
