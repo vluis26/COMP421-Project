@@ -1,6 +1,4 @@
-#!/bin/sh
-'''exec' "/Users/tuckr/Documents/UNC/COMP 421/ALMT Project/COMP421-Project/.venv/bin/python3" "$0" "$@"
-' '''
+#!/Users/anna/COMP421-Project/.venv/bin/python3.11
 # -*- coding: utf-8 -*-
 import re
 import sys

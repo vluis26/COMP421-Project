@@ -38,7 +38,7 @@ deactivate () {
 # unset irrelevant variables
 deactivate nondestructive
 
-VIRTUAL_ENV="/Users/tuckr/Documents/UNC/COMP 421/ALMT Project/COMP421-Project/.venv"
+VIRTUAL_ENV="/Users/anna/COMP421-Project/.venv"
 export VIRTUAL_ENV
 
 _OLD_VIRTUAL_PATH="$PATH"
