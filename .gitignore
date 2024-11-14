@@ -23,3 +23,12 @@ backend/venv
 *.njsproj
 *.sln
 *.sw?
+# Node.js
+node_modules/
+dist/
+
+# Python
+.venv/
+__pycache__/
+
+
