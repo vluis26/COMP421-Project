@@ -36,20 +36,25 @@ def get_pizzas():
     pizzas = {}
     
     for table in pizza_tables:
+        base_price = 10.00
+        price = base_price
         cursor.execute(f"SELECT item, type FROM {table}")
         ingredients = cursor.fetchall()
-        print(f"Ingredients for {table}: {ingredients}")  # Debugging statement
-        pizzas[table] = [{"item": item, "type": type} for item, type in ingredients]
+        ingredients_list = []
+        
+        for item, type in ingredients:
+            ingredients_list.append({"item": item, "type": type})
+            cursor.execute("SELECT price FROM prices WHERE type = ?", (type,))
+            price_row = cursor.fetchone()
+            if price_row:
+                price += price_row[0]
+        pizzas[table] = {"ingredients": ingredients_list, "price": f"{price:.2f}"}
     
     db.close()
 
-    # Check that the pizzas dictionary is valid
-    print(f"Returning pizzas: {pizzas}")  # Debugging statement
-
-    # Ensure the response is valid JSON
     try:
         response = jsonify(pizzas)
-        print(f"JSON Response: {response.get_data(as_text=True)}")  # Debugging the actual response
+        print(f"JSON Response: {response.get_data(as_text=True)}")  # Debugging
         return response
     except Exception as e:
         print(f"Error creating JSON response: {e}")

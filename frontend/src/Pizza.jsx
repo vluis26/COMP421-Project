@@ -3,7 +3,9 @@ import { useNavigate } from "react-router-dom";
 const Pizza = ({ name, ingredients, price }) => {
     const navigate = useNavigate();
     const handlePizzaClick = () => {
-        navigate("/order/extras");
+        navigate("/order/extras", {
+            state: { name, ingredients, price }
+        });
     };
     return (
         <div

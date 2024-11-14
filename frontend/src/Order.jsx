@@ -40,12 +40,12 @@ function Order() {
                     </h1>
                     <div className="p-5 grid grid-cols-3">
                         {/* Loop through pizza keys */}
-                        {Object.keys(pizzas).map((pizzaName, index) => (
+                        {Object.entries(pizzas).map(([pizzaName, pizzaData], index) => (
                             <Pizza
                                 key={index}
-                                name={pizzaName}
-                                ingredients={pizzas[pizzaName].map(item => item.item).join(", ")} 
-                                price={10.99} // Use your price logic here
+                                name={pizzaName.replaceAll("_", " ").toUpperCase()}
+                                ingredients={pizzaData.ingredients.map(item => item.item).join(", ")} 
+                                price={pizzaData.price} // Use your price logic here
                             />
                         ))}
                     </div>

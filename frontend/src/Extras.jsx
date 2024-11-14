@@ -1,9 +1,11 @@
+import { useLocation } from "react-router-dom";
 import IngredientCard from "./IngredientCard";
 import PizzaCard from "./PizzaCard";
 import Banner from "./Banner";
 const Extras = () => {
+    const location = useLocation();
+    const { name, ingredients, price } = location.state || {}; 
     return (
-        //TODO allow Pizza to be chosen dynamically
         <div className="w-screen h-full bg-slate-200">
             <Banner />
             <div className="flex justify-center">
@@ -14,9 +16,9 @@ const Extras = () => {
 
                     <div className="flex">
                         <PizzaCard
-                            name="Margarita"
-                            ingredients={"Tomato, Mozzarella, Basil"}
-                            price={10.99}
+                            name={name || "Error Pizza"}
+                            ingredients={ingredients || "error pizza has no ingredients :("}
+                            price={price || 0.99}
                         />
                         <div className="m-5">
                             <IngredientCard />
