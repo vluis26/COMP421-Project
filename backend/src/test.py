@@ -41,10 +41,10 @@ inventory = [
     ('ranch', 'condiment', 10), 
     ('bbq', 'condiment', 10), 
     ('garlic butter', 'condiment', 10), 
-    ('rat_drink', 'drink', 10), 
+    ('rat drink', 'drink', 10), 
     ('sprite', 'drink', 10), 
     ('coke', 'drink', 10), 
-    ('sweet_tea', 'drink', 10)
+    ('sweet tea', 'drink', 10)
 ]
 prices = [
     ('sauce', 0.00), 
@@ -120,8 +120,10 @@ cursor.execute('DROP TABLE IF EXISTS beach_rat_pizza')
 
 # Create tables
 cursor.execute('CREATE TABLE users (username TEXT PRIMARY KEY, password TEXT NOT NULL, status TEXT NOT NULL)')
+#TODO: add price to inventory table
 cursor.execute('CREATE TABLE inventory (item TEXT, type TEXT, quantity INTEGER NOT NULL, PRIMARY KEY(item, type))')
 cursor.execute('CREATE TABLE prices (type TEXT PRIMARY KEY, price REAL)')
+#TODO: Add table for orders, add table for pizzas
 
 # Create tables for pizzas
 cursor.execute('CREATE TABLE cheese_pizza (item TEXT, type TEXT, PRIMARY KEY(item, type))')
