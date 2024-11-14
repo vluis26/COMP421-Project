@@ -10,8 +10,22 @@ function Login() {
     const handleSubmit = (event) => {
         event.preventDefault();
         console.log("Logging in with:", { username, password });
-        navigate("/order");
+    
+        fetch(`http://localhost:5000/users?username=${encodeURIComponent(username)}&password=${encodeURIComponent(password)}`)
+            .then(response => response.json())
+            .then(data => {
+                if (data.found) {
+                    navigate("/order");
+                } else {
+                    alert("Username or password is incorrect.");
+                }
+            })
+            .catch(error => {
+                console.error("Error during login:", error);
+                alert("An error occurred. Please try again.");
+            });
     };
+    
 
     return (
         <div className="flex flex-col justify-center w-screen h-full bg-gradient-to-b from-red-600 to-red-800">
