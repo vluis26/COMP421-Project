@@ -8,6 +8,9 @@ users = [
     ('marge', 'largemarge92', 'manager')
 ]
 inventory = [
+    ('thin', 'crust', 10), 
+    ('thick', 'crust', 10), 
+    ('stuffed', 'specialty_crust', 10), 
     ('tomato', 'sauce', 10), 
     ('spicy', 'sauce', 10), 
     ('pesto', 'sauce', 10), 
@@ -16,9 +19,6 @@ inventory = [
     ('parmesan', 'cheese', 10), 
     ('cheddar', 'cheese', 10), 
     ('asiago', 'cheese', 10), 
-    ('thin', 'crust', 10), 
-    ('thick', 'crust', 10), 
-    ('stuffed', 'specialty_crust', 10), 
     ('tomato', 'vegetable', 10), 
     ('basil', 'vegetable', 10), 
     ('spinach', 'vegetable', 10), 
@@ -54,53 +54,14 @@ prices = [
     ('specialty_crust', 1.50), 
     ('drink', 2.00)
 ]
-cheese_pizza = [
-    ('thick', 'crust'), 
-    ('tomato', 'sauce'), 
-    ('mozzarella', 'cheese')
-]
-pepperoni_pizza = [
-    ('thick', 'crust'), 
-    ('tomato', 'sauce'), 
-    ('mozzarella', 'cheese'), 
-    ('pepperoni', 'meat')
-]
-margherita_pizza = [
-    ('thick', 'crust'), 
-    ('tomato', 'sauce'), 
-    ('mozzarella', 'cheese'), 
-    ('tomato', 'vegetable'), 
-    ('basil', 'vegetable'), 
-    ('pesto', 'condiment')
-]
-meat_rat_pizza = [
-    ('stuffed', 'specialty_crust'), 
-    ('spicy', 'sauce'), 
-    ('mozzarella', 'cheese'), 
-    ('pepperoni', 'meat'), 
-    ('ham', 'meat'), 
-    ('bacon', 'meat'), 
-    ('sausage', 'meat')
-]
-veggie_rat_pizza = [
-    ('thin', 'crust'), 
-    ('pesto', 'sauce'), 
-    ('mozzarella', 'cheese'), 
-    ('tomato', 'vegetable'), 
-    ('basil', 'vegetable'), 
-    ('spinach', 'vegetable'), 
-    ('arugula', 'vegetable'), 
-    ('onion', 'vegetable'), 
-    ('olives', 'vegetable'), 
-    ('artichoke', 'vegetable')
-]
-beach_rat_pizza = [
-    ('thin', 'crust'), 
-    ('spicy', 'sauce'), 
-    ('mozzarella', 'cheese'), 
-    ('cilantro', 'vegetable'), 
-    ('ham', 'meat')
-]
+pizzas = {
+    'cheese_pizza': (2, 4, 8),
+    'pepperoni_pizza': (2, 4, 8, 24),
+    'margherita_pizza': (2, 4, 8, 12, 13),
+    'meat_rat_pizza': (3, 5, 8, 24, 25, 26, 27),
+    'veggie_rat_pizza': (1, 6, 8, 12, 13, 14, 16, 17, 19, 22),
+    'beach_rat_pizza': (1, 5, 8, 18, 25)
+}
 
 # Connect to the SQLite database and create tables
 db = sqlite3.connect('pizza_rat.db')
@@ -114,45 +75,28 @@ cursor.execute('DROP TABLE IF EXISTS order_archive')
 cursor.execute('DROP TABLE IF EXISTS active_orders')
 cursor.execute('DROP TABLE IF EXISTS pizza_queue')
 cursor.execute('DROP TABLE IF EXISTS customers')
-
-cursor.execute('DROP TABLE IF EXISTS cheese_pizza')
-cursor.execute('DROP TABLE IF EXISTS pepperoni_pizza')
-cursor.execute('DROP TABLE IF EXISTS build_your_own_pizza')
-cursor.execute('DROP TABLE IF EXISTS margherita_pizza')
-cursor.execute('DROP TABLE IF EXISTS meat_rat_pizza')
-cursor.execute('DROP TABLE IF EXISTS veggie_rat_pizza')
-cursor.execute('DROP TABLE IF EXISTS beach_rat_pizza')
+cursor.execute('DROP TABLE IF EXISTS pizzas')
+cursor.execute('DROP TABLE IF EXISTS pizza_ingredients')
 
 # Create tables
 cursor.execute('CREATE TABLE users (username TEXT PRIMARY KEY, password TEXT NOT NULL, status TEXT NOT NULL)')
-cursor.execute('CREATE TABLE inventory (item TEXT, type TEXT, quantity INTEGER NOT NULL, PRIMARY KEY(item, type))')
+cursor.execute('CREATE TABLE inventory (item_id INTEGER PRIMARY KEY, item TEXT, type TEXT, quantity INTEGER NOT NULL)')
 cursor.execute('CREATE TABLE prices (type TEXT PRIMARY KEY, price REAL)')
-cursor.execute('CREATE TABLE order_archive (oid INTEGER PRIMARY KEY, customer_id INTEGER, employee_id INTEGER, price REAL)')
-cursor.execute('CREATE TABLE active_orders (oid INTEGER AUTO INCREMENT PRIMARY KEY, customer_id INTEGER, employee_id INTEGER, retrieval VARCHAR(20), status VARCHAR(20), quantity INTEGER, price REAL)')
-cursor.execute('CREATE TABLE pizza_queue (oid INTEGER, crust VARCHAR(20), sauce VARCHAR(20), cheese VARCHAR(20), vegetable VARCHAR(20), meat VARCHAR(20), condiment VARCHAR(20), drink VARCHAR(20))')
-cursor.execute('CREATE TABLE customers (username VARCHAR(20) PRIMARY KEY, customer_id INTEGER AUTO INCREMENT, first VARCHAR(20), last VARCHAR(20), phone INTEGER, email VARCHAR(100), address VARCHAR(100), card_number INTEGER)')
+cursor.execute('CREATE TABLE pizzas (pizza_name VARCHAR(40), item_id INTEGER, PRIMARY KEY(pizza_name, item_id))')
 
-# Create tables for pizzas
-cursor.execute('CREATE TABLE cheese_pizza (item TEXT, type TEXT, PRIMARY KEY(item, type))')
-cursor.execute('CREATE TABLE pepperoni_pizza (item TEXT, type TEXT, PRIMARY KEY(item, type))')
-cursor.execute('CREATE TABLE build_your_own_pizza (item TEXT, type TEXT, PRIMARY KEY(item, type))')
-cursor.execute('CREATE TABLE margherita_pizza (item TEXT, type TEXT, PRIMARY KEY(item, type))')
-cursor.execute('CREATE TABLE meat_rat_pizza (item TEXT, type TEXT, PRIMARY KEY(item, type))')
-cursor.execute('CREATE TABLE veggie_rat_pizza (item TEXT, type TEXT, PRIMARY KEY(item, type))')
-cursor.execute('CREATE TABLE beach_rat_pizza (item TEXT, type TEXT, PRIMARY KEY(item, type))')
+cursor.execute('CREATE TABLE order_archive (oid INTEGER PRIMARY KEY, customer_id INTEGER, employee_id INTEGER, price REAL)')
+cursor.execute('CREATE TABLE active_orders (oid INTEGER PRIMARY KEY, customer_id INTEGER, employee_id INTEGER, retrieval VARCHAR(20), status VARCHAR(20), quantity INTEGER, price REAL)')
+cursor.execute('CREATE TABLE pizza_queue (pid INTEGER, oid INTEGER, crust VARCHAR(20), sauce VARCHAR(20), cheese VARCHAR(20), vegetable VARCHAR(20), meat VARCHAR(20), condiment VARCHAR(20), drink VARCHAR(20))')
+cursor.execute('CREATE TABLE customers (username VARCHAR(20) PRIMARY KEY, customer_id INTEGER, first VARCHAR(20), last VARCHAR(20), phone INTEGER, email VARCHAR(100), address VARCHAR(100), card_number INTEGER)')
 
 # Insert data into tables
 cursor.executemany('INSERT INTO users (username, password, status) VALUES (?, ?, ?)', users)
 cursor.executemany('INSERT INTO inventory (item, type, quantity) VALUES (?, ?, ?)', inventory)
 cursor.executemany('INSERT INTO prices (type, price) VALUES (?, ?)', prices)
+for pizza in pizzas:
+    for item_id in pizzas[pizza]:
+        cursor.execute('INSERT INTO pizzas (pizza_name, item_id) values (?, ?)', (pizza, item_id))
 
-# Insert pizza recipes
-cursor.executemany('INSERT INTO cheese_pizza (item, type) VALUES (?, ?)', cheese_pizza)
-cursor.executemany('INSERT INTO pepperoni_pizza (item, type) VALUES (?, ?)', pepperoni_pizza)
-cursor.executemany('INSERT INTO margherita_pizza (item, type) VALUES (?, ?)', margherita_pizza)
-cursor.executemany('INSERT INTO meat_rat_pizza (item, type) VALUES (?, ?)', meat_rat_pizza)
-cursor.executemany('INSERT INTO veggie_rat_pizza (item, type) VALUES (?, ?)', veggie_rat_pizza)
-cursor.executemany('INSERT INTO beach_rat_pizza (item, type) VALUES (?, ?)', beach_rat_pizza)
 
 # Commit changes and close the database connection
 db.commit()

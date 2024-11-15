@@ -44,8 +44,11 @@ function Order() {
                             <Pizza
                                 key={index}
                                 name={pizzaName.replaceAll("_", " ").toUpperCase()}
-                                ingredients={pizzaData.ingredients.map(item => item.item).join(", ")} 
-                                price={pizzaData.price} // Use your price logic here
+                                crust={pizzaData.crust}
+                                sauce={pizzaData.sauce}
+                                ingredients={pizzaData.ingredients}
+                                ingredientsString={pizzaData.ingredients.map(item => item.item).join(", ")} 
+                                price={pizzaData.price}
                             />
                         ))}
                     </div>
