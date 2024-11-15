@@ -15,7 +15,7 @@ const IngredientCard = ({
     // Convert ingredients dictionary into a format for checkboxes (default all to true)
     const [selectedIngredients, setSelectedIngredients] = useState(
         ingredients ? Object.keys(ingredients).reduce((acc, ingredient) => {
-            acc[ingredient] = true; // Default all ingredients to true (checked)
+            acc[ingredients[ingredient].item] = true; // Default all ingredients to true (checked)
             return acc;
         }, {}) : {}
     );
@@ -30,28 +30,40 @@ const IngredientCard = ({
         setSelectedSauce(selected);
     };
 
-    const [p, setPrice] = useState(price); // Assuming base price is $10
+    const [p, setPrice] = useState(price);
 
-    // Function to handle ingredient change (add/remove ingredient)
-    const handleIngredientChange = async (event) => {
+    const fetchIngredientPrice = async (ingredientType) => {
+        console.log("Fetching price for ingredient type:", ingredientType);
+        try {
+            const response = await fetch(`http://localhost:5000/ingredient_price?ingredientType=${ingredientType}`);
+            const data = await response.json();
+            console.log("Recieved price for ingredient type:", ingredientType, " = ", data.price);
+            if (response.ok) {
+                return data.price;
+            } else {
+                console.error("Error fetching ingredient price:", data.error);
+                return 0;
+            }
+        } catch (error) {
+            console.error("Error fetching ingredient price:", error);
+            return 0;
+        }
+    };
+
+    const handleIngredientChange = async (ingredientType, event) => {
         const { name, checked } = event.target;
-
-        // Fetch price for the ingredient
-        const ingredientPrice = await fetchIngredientPrice(name);
-
-        // Update selected ingredients state
+        const ingredientPrice = await fetchIngredientPrice(ingredientType);
+        console.log("ingredient price:", ingredientPrice);
+        console.log("current price before update:", p);
+    
+        // Update selectedIngredients and price in one go
         setSelectedIngredients((prev) => {
             const updated = { ...prev, [name]: checked };
-
-            // Adjust price based on whether ingredient is selected or deselected
-            if (checked) {
-                setPrice((prevPrice) => prevPrice + ingredientPrice); // Increase price if checked
-            } else {
-                setPrice((prevPrice) => prevPrice - ingredientPrice); // Decrease price if unchecked
-            }
-
             return updated;
         });
+    
+        // Update price based on whether ingredient is checked or unchecked
+        setPrice((prevPrice) => checked ? prevPrice + ingredientPrice : prevPrice - ingredientPrice);
     };
 
     const handleAddToCart = () => {
@@ -114,13 +126,12 @@ const IngredientCard = ({
                 <h3 className="font-medium text-lg">Choose Ingredients</h3>
                 <div>
                     {Object.keys(ingredients).map((ingredient) => (
-                        <label key={ingredient} className="block">
+                        <label key={ingredients[ingredient].item} className="block">
                             <input
                                 type="checkbox"
-                                name={ingredient}
-                                checked={selectedIngredients[ingredient]}
-                                onChange={handleIngredientChange}
-                                className="mr-2"
+                                name={ingredients[ingredient].item}
+                                checked={selectedIngredients[ingredients[ingredient].item] || false}
+                                onChange={(event) => handleIngredientChange(ingredients[ingredient].type, event)}                                className="mr-2"
                             />
                             {ingredients[ingredient].item}
                         </label>
@@ -130,7 +141,7 @@ const IngredientCard = ({
             </div>
             <div className="mt-6">
                 <h3 className="font-bold text-xl px-5">
-                    Item Total: <text className="font-bold text-green-700" >{p}</text>
+                    Item Total: <span className="font-bold text-green-700" >${isNaN(p) ? 0 : Number(p).toFixed(2)}</span>
                 </h3>
             </div>
             <div className="mt-6 mx-auto w-1/2">

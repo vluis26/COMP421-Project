@@ -97,5 +97,24 @@ def get_inventory():
     
     return jsonify({"crusts": crusts, "sauces": sauces})
 
+@app.route("/ingredient_price", methods=["GET"])
+def get_ingredient_price():
+    ing_type = request.args.get("ingredientType")
+    if not ing_type:
+        return jsonify({"error": "Missing ingredient name"}), 400
+
+    db = sqlite3.connect("pizza_rat.db")
+    cursor = db.cursor()
+    
+    cursor.execute("SELECT price FROM prices WHERE type = ?", (ing_type,))
+    result = cursor.fetchone()
+    db.close()
+    
+    if result:
+        return jsonify({"price": result[0]})
+    else:
+        return jsonify({"price": 0})
+
+
 if __name__ == "__main__":
     app.run(debug=True)
