@@ -8,8 +8,8 @@ const IngredientCard = ({
     ingredients,
     price
 }) => {
-    
-    const [selectedCrust, setSelectedCrust] = useState(crust);
+    console.log(crust)
+    const [selectedCrust, setSelectedCrust] = useState(crust != "null" ? crust : "thick");
     const [selectedSauce, setSelectedSauce] = useState(sauce);
     
     // Convert ingredients dictionary into a format for checkboxes (default all to true)

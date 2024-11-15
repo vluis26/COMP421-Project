@@ -45,15 +45,15 @@ const Extras = () => {
                     <div className="flex">
                         <PizzaCard
                             name={name || "Error Pizza"}
-                            crust={crust || "hmm"}
-                            sauce={sauce || "hmm"}
+                            crust={crust || "null"}
+                            sauce={sauce || "null"}
                             ingredients={ingredients || "error pizza has no ingredients :("}
                             price={price || 0.99}
                         />
                         <div className="m-5">
                             <IngredientCard
-                                crust={crust || "hmm"}
-                                sauce={sauce || "hmm"}
+                                crust={crust || "null"}
+                                sauce={sauce || "null"}
                                 ingredients={ingredients || "error pizza has no ingredients :("}
                                 price={price || 0.99}
                                 crusts={crusts}
