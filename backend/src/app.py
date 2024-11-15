@@ -97,6 +97,7 @@ def get_inventory():
     
     return jsonify({"crusts": crusts, "sauces": sauces})
 
+
 @app.route("/ingredient_price", methods=["GET"])
 def get_ingredient_price():
     ing_type = request.args.get("ingredientType")

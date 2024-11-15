@@ -12,10 +12,9 @@ const IngredientCard = ({
     const [selectedCrust, setSelectedCrust] = useState(crust != "null" ? crust : "thick");
     const [selectedSauce, setSelectedSauce] = useState(sauce);
     
-    // Convert ingredients dictionary into a format for checkboxes (default all to true)
     const [selectedIngredients, setSelectedIngredients] = useState(
         ingredients ? Object.keys(ingredients).reduce((acc, ingredient) => {
-            acc[ingredients[ingredient].item] = true; // Default all ingredients to true (checked)
+            acc[ingredients[ingredient].item] = true;
             return acc;
         }, {}) : {}
     );
@@ -56,18 +55,15 @@ const IngredientCard = ({
         console.log("ingredient price:", ingredientPrice);
         console.log("current price before update:", p);
     
-        // Update selectedIngredients and price in one go
         setSelectedIngredients((prev) => {
             const updated = { ...prev, [name]: checked };
             return updated;
         });
     
-        // Update price based on whether ingredient is checked or unchecked
         setPrice((prevPrice) => checked ? prevPrice + ingredientPrice : prevPrice - ingredientPrice);
     };
 
     const handleAddToCart = () => {
-        // Create an object representing the current selection
         const cartData = {
             crust: selectedCrust,
             sauce: selectedSauce,

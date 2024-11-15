@@ -39,7 +39,6 @@ function Order() {
                         Choose your meal...
                     </h1>
                     <div className="p-5 grid grid-cols-3">
-                        {/* Loop through pizza keys */}
                         {Object.entries(pizzas).map(([pizzaName, pizzaData], index) => (
                             <Pizza
                                 key={index}

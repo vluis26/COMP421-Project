@@ -7,6 +7,10 @@ users = [
     ('jim', 'gumball420', 'employee'), 
     ('marge', 'largemarge92', 'manager')
 ]
+customers = [
+    ('bob', 'Bob', 'Robby', 1112223344, 'bob@bob.bo', '800 Bob Drive, Durham NC 27712', '999988887777'),
+    ('sally', 'Salmon', 'Robby', 1112223344, 'fish@lake.co.uk', '800 Bob Drive, Durham NC 27712', '666655554444')
+]
 inventory = [
     ('thin', 'crust', 10), 
     ('thick', 'crust', 10), 
@@ -71,32 +75,32 @@ cursor = db.cursor()
 cursor.execute('DROP TABLE IF EXISTS users')
 cursor.execute('DROP TABLE IF EXISTS inventory')
 cursor.execute('DROP TABLE IF EXISTS prices')
+cursor.execute('DROP TABLE IF EXISTS pizzas')
 cursor.execute('DROP TABLE IF EXISTS order_archive')
 cursor.execute('DROP TABLE IF EXISTS active_orders')
 cursor.execute('DROP TABLE IF EXISTS pizza_queue')
+cursor.execute('DROP TABLE IF EXISTS pizza_ingreds')
 cursor.execute('DROP TABLE IF EXISTS customers')
-cursor.execute('DROP TABLE IF EXISTS pizzas')
-cursor.execute('DROP TABLE IF EXISTS pizza_ingredients')
 
 # Create tables
 cursor.execute('CREATE TABLE users (username TEXT PRIMARY KEY, password TEXT NOT NULL, status TEXT NOT NULL)')
 cursor.execute('CREATE TABLE inventory (item_id INTEGER PRIMARY KEY, item TEXT, type TEXT, quantity INTEGER NOT NULL)')
 cursor.execute('CREATE TABLE prices (type TEXT PRIMARY KEY, price REAL)')
 cursor.execute('CREATE TABLE pizzas (pizza_name VARCHAR(40), item_id INTEGER, PRIMARY KEY(pizza_name, item_id))')
-
 cursor.execute('CREATE TABLE order_archive (oid INTEGER PRIMARY KEY, customer_id INTEGER, employee_id INTEGER, price REAL)')
 cursor.execute('CREATE TABLE active_orders (oid INTEGER PRIMARY KEY, customer_id INTEGER, employee_id INTEGER, retrieval VARCHAR(20), status VARCHAR(20), quantity INTEGER, price REAL)')
-cursor.execute('CREATE TABLE pizza_queue (pid INTEGER, oid INTEGER, crust VARCHAR(20), sauce VARCHAR(20), cheese VARCHAR(20), vegetable VARCHAR(20), meat VARCHAR(20), condiment VARCHAR(20), drink VARCHAR(20))')
+cursor.execute('CREATE TABLE pizza_queue (pid INTEGER, oid INTEGER)')
+cursor.execute('CREATE TABLE pizza_ingreds (pid INTEGER, item_id INTEGER, PRIMARY KEY(pid, item_id))')
 cursor.execute('CREATE TABLE customers (username VARCHAR(20) PRIMARY KEY, customer_id INTEGER, first VARCHAR(20), last VARCHAR(20), phone INTEGER, email VARCHAR(100), address VARCHAR(100), card_number INTEGER)')
 
 # Insert data into tables
 cursor.executemany('INSERT INTO users (username, password, status) VALUES (?, ?, ?)', users)
 cursor.executemany('INSERT INTO inventory (item, type, quantity) VALUES (?, ?, ?)', inventory)
 cursor.executemany('INSERT INTO prices (type, price) VALUES (?, ?)', prices)
+cursor.executemany('INSERT INTO customers (username, first, last, phone, email, address, card_number) values (?, ?, ?, ?, ?, ?, ?)', customers)
 for pizza in pizzas:
     for item_id in pizzas[pizza]:
         cursor.execute('INSERT INTO pizzas (pizza_name, item_id) values (?, ?)', (pizza, item_id))
-
 
 # Commit changes and close the database connection
 db.commit()
