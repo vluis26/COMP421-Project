@@ -29,9 +29,16 @@ export const UserProvider = ({ children }) => {
     // Save user and cart to localStorage
     useEffect(() => {
         console.log("Saving to localStorage: ", { user, cart });
-        if (user !== null && cart !== null) {
+        if (user !== null) {
             localStorage.setItem("user", JSON.stringify(user));
+        } else {
+            localStorage.removeItem("user");
+        }
+        
+        if (cart.length > 0) {
             localStorage.setItem("cart", JSON.stringify(cart));
+        } else {
+            localStorage.removeItem("cart");
         }
     }, [user, cart]);
 
@@ -40,29 +47,42 @@ export const UserProvider = ({ children }) => {
         console.log("Cart updated:", cart);
     }, [cart]);
 
+    // Login function
     const login = (userData) => {
         setUser(userData);
     };
 
+    // Logout function
     const logout = () => {
-        setUser(null);
+        setUser(null);  // Clear user state
+        localStorage.removeItem("user");  // Clear user from localStorage
+        localStorage.removeItem("cart");  // Clear cart from localStorage (optional)
     };
 
+    // Add item to cart
     const addToCart = (cartItem) => {
         const itemWithIndex = { ...cartItem, index: cart.length };  // Use the current length as the index
         setCart((prevCart) => [...prevCart, itemWithIndex]);
     };
 
+    // Remove item from cart
     const removeFromCart = (indexToRemove) => {
         console.log("Before removing item:", cart);
         setCart((prevCart) => prevCart.filter((item, index) => index !== indexToRemove));
         console.log("After removing item:", cart);
     };
 
+    // Clear all items in cart
     const clearCart = () => {
         console.log("Clearing Cart:", cart);
         setCart([]);
     };
+
+    // Debugging log for user and cart states
+    useEffect(() => {
+        console.log("Current user state:", user);
+        console.log("Current cart state:", cart);
+    }, [user, cart]);
 
     return (
         <UserContext.Provider value={{ user, login, logout, cart, addToCart, removeFromCart, clearCart }}>

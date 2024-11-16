@@ -5,7 +5,8 @@ import PizzaCard from "./PizzaCard";
 
 const Cart = () => {
     const { cart, removeFromCart } = useUser();
-    const totalPrice = cart.reduce((sum, item) => sum + item.price, 0);
+    console.log(cart);   
+    const totalPrice = cart.reduce((sum, item) => sum + parseFloat(item.price || 0), 0);
 
     return (
         <div className="w-screen h-full">

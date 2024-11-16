@@ -45,8 +45,8 @@ def get_pizzas():
         item_ids = [item[0] for item in cursor.fetchall()]
 
         for item_id in item_ids:
-            cursor.execute("SELECT item, type FROM inventory WHERE item_id = ?", (item_id,))
-            item, item_type = cursor.fetchone()
+            cursor.execute("SELECT item, type, quantity FROM inventory WHERE item_id = ?", (item_id,))
+            item, item_type, quantity = cursor.fetchone()
 
             if item_type == "crust":
                 crust = item
@@ -56,7 +56,8 @@ def get_pizzas():
                 ingredients_list.append({"item": item, "type": item_type})
             
             item_price = price_map.get(item_type, 0)
-            price += item_price
+            if quantity != 0:
+                price += item_price
 
         pizzas_data[pizza_name] = {
             "crust": crust,

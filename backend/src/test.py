@@ -12,11 +12,11 @@ customers = [
     ('sally', 'Salmon', 'Robby', 1112223344, 'fish@lake.co.uk', '800 Bob Drive, Durham NC 27712', '666655554444')
 ]
 inventory = [
-    ('thin', 'crust', 10), 
+    ('thin', 'crust', 0), 
     ('thick', 'crust', 10), 
     ('stuffed', 'specialty_crust', 10), 
     ('tomato', 'sauce', 10), 
-    ('spicy', 'sauce', 10), 
+    ('spicy', 'sauce', 0), 
     ('pesto', 'sauce', 10), 
     ('alfredo', 'sauce', 10), 
     ('mozzarella', 'cheese', 0), 
@@ -29,7 +29,7 @@ inventory = [
     ('kale', 'vegetable', 10), 
     ('arugula', 'vegetable', 10), 
     ('onion', 'vegetable', 10), 
-    ('cilantro', 'vegetable', 10), 
+    ('cilantro', 'vegetable', 0), 
     ('olives', 'vegetable', 10), 
     ('pineapple', 'vegetable', 10), 
     ('pickles', 'vegetable', 10), 

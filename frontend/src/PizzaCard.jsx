@@ -13,17 +13,18 @@ const PizzaCard = ({ name, crust, sauce, ingredients, price, employee }) => {
             <div className="text-lg text-gray-700 mt-2">
                 <p><strong>Crust:</strong> {crust}</p>
                 <p><strong>Sauce:</strong> {sauce}</p>
-                <p><strong>Toppings:</strong>
-                    {ingredients.length === 0 ? (<p>No toppings</p> ) : (
-                        <ul>
-                            {ingredients.map((ingredient, index) => (
+                <p><strong>Toppings:</strong></p>
+                {ingredients.length === 0 ? (
+                    <p>No toppings</p>
+                ) : (
+                    <ul>
+                        {ingredients.map((ingredient, index) => (
                             <li key={index}>
                                 {ingredient.item}
                             </li>
-                            ))}
-                        </ul>
-                    )}
-                </p>
+                        ))}
+                    </ul>
+                )}
             </div>
             
             {employee && (
