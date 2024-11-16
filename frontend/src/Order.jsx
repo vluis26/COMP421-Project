@@ -11,7 +11,7 @@ function Order() {
                 const response = await fetch("http://127.0.0.1:5000/pizzas");
     
                 const text = await response.text();
-                console.log("Raw response text:", text);
+                //console.log("Raw response text:", text);
     
                 try {
                     const data = JSON.parse(text);

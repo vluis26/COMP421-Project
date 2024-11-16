@@ -19,7 +19,7 @@ inventory = [
     ('spicy', 'sauce', 10), 
     ('pesto', 'sauce', 10), 
     ('alfredo', 'sauce', 10), 
-    ('mozzarella', 'cheese', 10), 
+    ('mozzarella', 'cheese', 0), 
     ('parmesan', 'cheese', 10), 
     ('cheddar', 'cheese', 10), 
     ('asiago', 'cheese', 10), 

@@ -10,8 +10,22 @@ const PizzaCard = ({ name, crust, sauce, ingredients, price, employee }) => {
         <div className="shadow-md rounded-xl p-10 bg-slate-100 w-80">
             <img src={cartoonPizza} className="w-64" />
             <p className="font-bold text-3xl">{name}</p>
+            <div className="text-lg text-gray-700 mt-2">
+                <p><strong>Crust:</strong> {crust}</p>
+                <p><strong>Sauce:</strong> {sauce}</p>
+                <p><strong>Toppings:</strong>
+                    {ingredients.length === 0 ? (<p>No toppings</p> ) : (
+                        <ul>
+                            {ingredients.map((ingredient, index) => (
+                            <li key={index}>
+                                {ingredient.item}
+                            </li>
+                            ))}
+                        </ul>
+                    )}
+                </p>
+            </div>
             
-            {/* <span className="font-bold text-xl">${price}</span> */}
             {employee && (
                 <div>
                     <div className="flex flex-col justify-center">

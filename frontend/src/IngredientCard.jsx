@@ -1,6 +1,9 @@
+import React, { useEffect } from 'react';
 import { useState } from "react";
+import { useUser } from './UserContext';
 
 const IngredientCard = ({
+    name,
     crusts,
     sauces,
     crust,
@@ -11,6 +14,8 @@ const IngredientCard = ({
     console.log(crust)
     const [selectedCrust, setSelectedCrust] = useState(crust != "null" ? crust : "thick");
     const [selectedSauce, setSelectedSauce] = useState(sauce);
+    const { addToCart } = useUser();
+    const [ingredientAvailability, setIngredientAvailability] = useState({});
     
     const [selectedIngredients, setSelectedIngredients] = useState(
         ingredients ? Object.keys(ingredients).reduce((acc, ingredient) => {
@@ -32,11 +37,11 @@ const IngredientCard = ({
     const [p, setPrice] = useState(price);
 
     const fetchIngredientPrice = async (ingredientType) => {
-        console.log("Fetching price for ingredient type:", ingredientType);
+        // console.log("Fetching price for ingredient type:", ingredientType);
         try {
             const response = await fetch(`http://localhost:5000/ingredient_price?ingredientType=${ingredientType}`);
             const data = await response.json();
-            console.log("Recieved price for ingredient type:", ingredientType, " = ", data.price);
+            // console.log("Recieved price for ingredient type:", ingredientType, " = ", data.price);
             if (response.ok) {
                 return data.price;
             } else {
@@ -52,8 +57,8 @@ const IngredientCard = ({
     const handleIngredientChange = async (ingredientType, event) => {
         const { name, checked } = event.target;
         const ingredientPrice = await fetchIngredientPrice(ingredientType);
-        console.log("ingredient price:", ingredientPrice);
-        console.log("current price before update:", p);
+        // console.log("ingredient price:", ingredientPrice);
+        // console.log("current price before update:", p);
     
         setSelectedIngredients((prev) => {
             const updated = { ...prev, [name]: checked };
@@ -64,15 +69,41 @@ const IngredientCard = ({
     };
 
     const handleAddToCart = () => {
+        const filteredIngredients = ingredients ? Object.keys(ingredients).filter((ingredient) => {
+            return selectedIngredients[ingredients[ingredient].item] === true;
+        }).map((ingredient) => ingredients[ingredient]) : [];
         const cartData = {
+            name: name,
             crust: selectedCrust,
             sauce: selectedSauce,
-            ingredients: Object.keys(selectedIngredients).filter(
-                (ingredient) => selectedIngredients[ingredient]
-            ),
+            ingredients: filteredIngredients,
+            price: p
         };
-        onAddToCart(cartData);
-    }
+        addToCart(cartData);
+    };
+
+    useEffect(() => {
+        const checkIngredientAvailability = async () => {
+            const availability = {};
+            for (const ingredientKey of Object.keys(ingredients)) {
+                const { item, type } = ingredients[ingredientKey];
+                try {
+                    const response = await fetch(
+                        `http://127.0.0.1:5000/validate_item?ingred_item=${encodeURIComponent(item)}&ingred_type=${encodeURIComponent(type)}`
+                    );
+                    const data = await response.json();
+                    availability[item] = data.available;
+                    console.log(item, ": ", data.available)
+                } catch (error) {
+                    console.error(`Error checking availability for ${item}:`, error);
+                    availability[item] = false;
+                }
+            }
+            setIngredientAvailability(availability);
+        };
+
+        checkIngredientAvailability();
+    }, [ingredients]);
 
     return (
         <div className="bg-white p-5 rounded-xl shadow-lg">
@@ -119,19 +150,26 @@ const IngredientCard = ({
             </div>
 
             <div className="mb-4">
-                <h3 className="font-medium text-lg">Choose Ingredients</h3>
+                <h3 className="font-medium text-lg">Choose Toppings</h3>
                 <div>
-                    {Object.keys(ingredients).map((ingredient) => (
-                        <label key={ingredients[ingredient].item} className="block">
+                    {Object.keys(ingredients).map((ingredient) => {
+                        const isIngredAvailable = ingredientAvailability[ingredients[ingredient].item] !== false;
+                        return (
+                        <label
+                            key={ingredients[ingredient].item}
+                            className={`block ${isIngredAvailable ? "" : "text-gray-500"}`}>
                             <input
                                 type="checkbox"
                                 name={ingredients[ingredient].item}
                                 checked={selectedIngredients[ingredients[ingredient].item] || false}
-                                onChange={(event) => handleIngredientChange(ingredients[ingredient].type, event)}                                className="mr-2"
+                                onChange={(event) => handleIngredientChange(ingredients[ingredient].type, event)}
+                                disabled={!isIngredAvailable}
+                                className="mr-2"
                             />
                             {ingredients[ingredient].item}
                         </label>
-                    ))}
+                        );
+                    })}
                 </div>
             </div>
             </div>
@@ -143,7 +181,7 @@ const IngredientCard = ({
             <div className="mt-6 mx-auto w-1/2">
                 <button
                     onClick={handleAddToCart}
-                    className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-700"
+                    className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-700 active:bg-green-400"
                 >
                     Add to Cart
                 </button>

@@ -44,7 +44,7 @@ const Extras = () => {
 
                     <div className="flex">
                         <PizzaCard
-                            name={name || "Error Pizza"}
+                            name={name || "null"}
                             crust={crust || "null"}
                             sauce={sauce || "null"}
                             ingredients={ingredients || "error pizza has no ingredients :("}
@@ -52,6 +52,7 @@ const Extras = () => {
                         />
                         <div className="m-5">
                             <IngredientCard
+                                name={name || "null"}
                                 crust={crust || "null"}
                                 sauce={sauce || "null"}
                                 ingredients={ingredients || "error pizza has no ingredients :("}

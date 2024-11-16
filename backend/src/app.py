@@ -27,11 +27,9 @@ def get_pizzas():
     db = sqlite3.connect("pizza_rat.db")
     cursor = db.cursor()
 
-    # Fetch prices for different ingredient types
     cursor.execute("SELECT type, price FROM prices")
     price_map = {row[0]: row[1] for row in cursor.fetchall()}
 
-    # Fetch distinct pizza names
     cursor.execute("SELECT DISTINCT pizza_name FROM pizzas")
     pizza_names = [row[0] for row in cursor.fetchall()]
     pizzas_data = {}
@@ -43,7 +41,6 @@ def get_pizzas():
         sauce = None
         ingredients_list = []
 
-        # Fetch items associated with the pizza
         cursor.execute("SELECT item_id FROM pizzas WHERE pizza_name = ?", (pizza_name,))
         item_ids = [item[0] for item in cursor.fetchall()]
 
@@ -51,7 +48,6 @@ def get_pizzas():
             cursor.execute("SELECT item, type FROM inventory WHERE item_id = ?", (item_id,))
             item, item_type = cursor.fetchone()
 
-            # Check item type to separate crust and sauce
             if item_type == "crust":
                 crust = item
             elif item_type == "sauce":
@@ -59,11 +55,9 @@ def get_pizzas():
             else:
                 ingredients_list.append({"item": item, "type": item_type})
             
-            # Add item price if it exists in the price map
             item_price = price_map.get(item_type, 0)
             price += item_price
 
-        # Store the pizza data with crust and sauce as separate fields
         pizzas_data[pizza_name] = {
             "crust": crust,
             "sauce": sauce,
@@ -115,6 +109,19 @@ def get_ingredient_price():
         return jsonify({"price": result[0]})
     else:
         return jsonify({"price": 0})
+
+
+@app.route("/validate_item", methods=["GET"])
+def is_ingredient_stocked():
+    item = request.args.get("ingred_item")
+    type = request.args.get("ingred_type")
+    db = sqlite3.connect("pizza_rat.db")
+    cursor = db.cursor()
+    cursor.execute("SELECT quantity FROM inventory WHERE item = ? and type = ?", (item, type))
+    quant = cursor.fetchone()
+    if quant and quant[0] > 0:
+        return jsonify({"available": True})
+    return jsonify({"available": False})
 
 
 if __name__ == "__main__":
