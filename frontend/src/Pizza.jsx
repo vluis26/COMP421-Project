@@ -1,10 +1,10 @@
 import { ArrowRight } from "lucide-react";
 import { useNavigate } from "react-router-dom";
-const Pizza = ({ name, crust, sauce, ingredients, ingredientsString, price }) => {
+const Pizza = ({ name, crust, sauce, ingredients, ingredientsString, price, base_price }) => {
     const navigate = useNavigate();
     const handlePizzaClick = () => {
         navigate("/order/extras", {
-            state: { name, crust, sauce, ingredients, price }
+            state: { name, crust, sauce, ingredients, price}
         });
     };
     return (
@@ -16,7 +16,7 @@ const Pizza = ({ name, crust, sauce, ingredients, ingredientsString, price }) =>
                 <p className="font-bold text-lg p-2">{name}</p>
                 <p className="font-bold text-med">Toppings:</p>
                 <p className=" italic pl-3">{ingredientsString}</p>
-                <p className=" italic pl-3">${price}</p>
+                <p className=" italic pl-3">${base_price}</p>
             </div>
             <div className="items-center">
                 <ArrowRight />

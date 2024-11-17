@@ -3,7 +3,6 @@ import React, { createContext, useContext, useState, useEffect } from "react";
 const UserContext = createContext();
 
 export const UserProvider = ({ children }) => {
-    // Load user and cart from localStorage with error handling
     const [user, setUser] = useState(() => {
         try {
             const savedUser = localStorage.getItem("user");
@@ -26,7 +25,16 @@ export const UserProvider = ({ children }) => {
         }
     });
 
-    // Save user and cart to localStorage
+    const [ingredientCounts, setIngredientCounts] = useState(() => {
+        try {
+            const savedCounts = localStorage.getItem("ingredientCounts");
+            return savedCounts ? JSON.parse(savedCounts) : {};
+        } catch (error) {
+            console.error("Error parsing ingredient counts from localStorage:", error);
+            return {};
+        }
+    });
+
     useEffect(() => {
         console.log("Saving to localStorage: ", { user, cart });
         if (user !== null) {
@@ -40,52 +48,73 @@ export const UserProvider = ({ children }) => {
         } else {
             localStorage.removeItem("cart");
         }
-    }, [user, cart]);
+        localStorage.setItem("ingredientCounts", JSON.stringify(ingredientCounts));
+    }, [user, cart, ingredientCounts]);
 
-    // Log cart updates
     useEffect(() => {
         console.log("Cart updated:", cart);
     }, [cart]);
 
-    // Login function
     const login = (userData) => {
         setUser(userData);
     };
 
-    // Logout function
     const logout = () => {
-        setUser(null);  // Clear user state
-        localStorage.removeItem("user");  // Clear user from localStorage
-        localStorage.removeItem("cart");  // Clear cart from localStorage (optional)
+        setUser(null);
+        localStorage.removeItem("user");
+        localStorage.removeItem("cart");
     };
 
-    // Add item to cart
     const addToCart = (cartItem) => {
-        const itemWithIndex = { ...cartItem, index: cart.length };  // Use the current length as the index
+        const itemWithIndex = { ...cartItem, index: cart.length };
+        updateIngredientCounts(cartItem.ingredients, "add");
         setCart((prevCart) => [...prevCart, itemWithIndex]);
     };
 
-    // Remove item from cart
     const removeFromCart = (indexToRemove) => {
-        console.log("Before removing item:", cart);
+        const itemToRemove = cart[indexToRemove];
+        updateIngredientCounts(itemToRemove.ingredients, "remove");
         setCart((prevCart) => prevCart.filter((item, index) => index !== indexToRemove));
-        console.log("After removing item:", cart);
     };
 
-    // Clear all items in cart
     const clearCart = () => {
         console.log("Clearing Cart:", cart);
         setCart([]);
+        setIngredientCounts({});
     };
 
-    // Debugging log for user and cart states
+    // Debugging log
     useEffect(() => {
         console.log("Current user state:", user);
         console.log("Current cart state:", cart);
+        console.log("Current ingredientCounts state:", ingredientCounts)
     }, [user, cart]);
 
+    const updateIngredientCounts = (ingredients, action) => {
+        console.log("Updating ingredient counts. Action:", action);
+        console.log("Ingredients being added/removed:", ingredients);
+    
+        setIngredientCounts((prevCounts) => {
+            const newCounts = { ...prevCounts };
+    
+            ingredients.forEach(({ item, type }) => {
+                const key = `${item}-${type}`;
+                console.log("Current key:", key);
+                if (action === "add") {
+                    newCounts[key] = (newCounts[key] || 0) + 1;
+                } else if (action === "remove") {
+                    newCounts[key] = (newCounts[key] || 0) - 1;
+                    if (newCounts[key] <= 0) delete newCounts[key]; // Remove item if count is zero or less
+                }
+                console.log("Updated counts for key:", key, newCounts[key]);
+            });
+    
+            return newCounts;
+        });
+    };
+
     return (
-        <UserContext.Provider value={{ user, login, logout, cart, addToCart, removeFromCart, clearCart }}>
+        <UserContext.Provider value={{ user, login, logout, cart, addToCart, removeFromCart, clearCart, ingredientCounts, updateIngredientCounts }}>
             {children}
         </UserContext.Provider>
     );

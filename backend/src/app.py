@@ -59,18 +59,20 @@ def get_pizzas():
             if quantity != 0:
                 price += item_price
 
+            base_price += item_price
+
         pizzas_data[pizza_name] = {
             "crust": crust,
             "sauce": sauce,
             "ingredients": ingredients_list,
-            "price": f"{price:.2f}"
+            "price": f"{price:.2f}",
+            "base_price": f"{base_price:.2f}"
         }
 
     db.close()
     
     try:
         response = jsonify(pizzas_data)
-        print(f"JSON Response: {response.get_data(as_text=True)}")  # Debugging
         return response
     except Exception as e:
         print(f"Error creating JSON response: {e}")
@@ -123,6 +125,64 @@ def is_ingredient_stocked():
     if quant and quant[0] > 0:
         return jsonify({"available": True})
     return jsonify({"available": False})
+
+
+@app.route("/check_inventory", methods=["POST"])
+def check_inventory():
+    try:
+        data = request.json
+        print("Received ingredient counts:", data)
+
+        if not data or "ingredientCounts" not in data:
+            print("Error: Missing ingredient counts in request")
+            return jsonify({
+                "success": False,
+                "message": "Missing ingredient counts",
+                "insufficient_items": []
+            }), 400
+
+        ingredient_counts = data["ingredientCounts"]
+        print("Processing ingredient counts:", ingredient_counts)
+
+        db = sqlite3.connect("pizza_rat.db")
+        cursor = db.cursor()
+        insufficient_items = []
+
+        for key, count in ingredient_counts.items():
+            item, item_type = key.split("-")
+            cursor.execute(
+                "SELECT quantity FROM inventory WHERE item = ? AND type = ?",
+                (item, item_type),
+            )
+            result = cursor.fetchone()
+            print(f"Checking {item} ({item_type}): Needed {count}, Found {result}")
+
+            if result is None or result[0] < count:
+                insufficient_items.append({
+                    "item": item,
+                    "type": item_type,
+                    "needed": count,
+                    "available": result[0] if result else 0
+                })
+
+        db.close()
+
+        if insufficient_items:
+            print("Insufficient items found:", insufficient_items)
+            return jsonify({
+                "success": False,
+                "insufficient_items": insufficient_items
+            }), 400
+
+        # Success case
+        print("All ingredients are sufficient.")
+        return jsonify({"success": True})
+
+    except Exception as e:
+        print("Error in /check_inventory:", str(e))
+        return jsonify({"success": False, "message": str(e)}), 500
+
+
 
 
 if __name__ == "__main__":

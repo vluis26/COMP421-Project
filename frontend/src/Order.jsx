@@ -9,9 +9,7 @@ function Order() {
         const fetchPizzas = async () => {
             try {
                 const response = await fetch("http://127.0.0.1:5000/pizzas");
-    
                 const text = await response.text();
-                //console.log("Raw response text:", text);
     
                 try {
                     const data = JSON.parse(text);
@@ -48,6 +46,7 @@ function Order() {
                                 ingredients={pizzaData.ingredients}
                                 ingredientsString={pizzaData.ingredients.map(item => item.item).join(", ")} 
                                 price={pizzaData.price}
+                                base_price={pizzaData.base_price}
                             />
                         ))}
                     </div>

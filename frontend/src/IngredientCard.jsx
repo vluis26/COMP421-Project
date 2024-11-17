@@ -38,11 +38,9 @@ const IngredientCard = ({
     const [p, setPrice] = useState(price || 0);
 
     const fetchIngredientPrice = async (ingredientType) => {
-        // console.log("Fetching price for ingredient type:", ingredientType);
         try {
             const response = await fetch(`http://localhost:5000/ingredient_price?ingredientType=${ingredientType}`);
             const data = await response.json();
-            // console.log("Recieved price for ingredient type:", ingredientType, " = ", data.price);
             if (response.ok) {
                 return data.price;
             } else {
@@ -59,7 +57,6 @@ const IngredientCard = ({
         const { name, checked } = event.target;
         const ingredientPrice = await fetchIngredientPrice(ingredientType);
         console.log("ingredientType: ", ingredientType, " | price: ", ingredientPrice);
-        // console.log("current price before update:", p);
     
         setSelectedIngredients((prev) => {
             const updated = { ...prev, [name]: checked };
@@ -74,9 +71,15 @@ const IngredientCard = ({
     }, [p]);
 
     const handleAddToCart = () => {
-        const filteredIngredients = ingredients ? Object.keys(ingredients).filter((ingredient) => {
-            return selectedIngredients[ingredients[ingredient].item] === true;
-        }).map((ingredient) => ingredients[ingredient]) : [];
+        console.log("Ingredients:", ingredients);
+        console.log("Selected Ingredients:", selectedIngredients);
+    
+        const filteredIngredients = ingredients ? ingredients.filter((ingredient) => {
+            return selectedIngredients[ingredient.item] === true;
+        }) : [];
+    
+        console.log("Filtered Ingredients:", filteredIngredients);
+    
         const cartData = {
             name: name,
             crust: selectedCrust,
@@ -84,8 +87,10 @@ const IngredientCard = ({
             ingredients: filteredIngredients,
             price: p
         };
+    
         addToCart(cartData);
     };
+    
 
     useEffect(() => {
         const checkIngredientAvailability = async () => {

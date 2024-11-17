@@ -1,6 +1,5 @@
 import sqlite3
 
-# Data to insert into tables
 users = [
     ('bob', 'robby123', 'customer'), 
     ('sally', 'slayer123', 'customer'), 
@@ -12,7 +11,7 @@ customers = [
     ('sally', 'Salmon', 'Robby', 1112223344, 'fish@lake.co.uk', '800 Bob Drive, Durham NC 27712', '666655554444')
 ]
 inventory = [
-    ('thin', 'crust', 0), 
+    ('thin', 'crust', 2), 
     ('thick', 'crust', 10), 
     ('stuffed', 'specialty_crust', 10), 
     ('tomato', 'sauce', 10), 
