@@ -155,32 +155,47 @@ def check_inventory():
                 (item, item_type),
             )
             result = cursor.fetchone()
-            print(f"Checking {item} ({item_type}): Needed {count}, Found {result}")
 
-            if result is None or result[0] < count:
+            # Unpack result tuple and handle missing data
+            available_quantity = result[0] if result else 0
+            print(f"Checking {item} ({item_type}): Needed {count}, Found {available_quantity}")
+
+            if available_quantity < count:
                 insufficient_items.append({
                     "item": item,
                     "type": item_type,
                     "needed": count,
-                    "available": result[0] if result else 0
+                    "available": available_quantity
                 })
 
-        db.close()
-
+        # If any items are insufficient, return the error response
         if insufficient_items:
-            print("Insufficient items found:", insufficient_items)
+            db.close()
+            print("Insufficient items:", insufficient_items)
             return jsonify({
                 "success": False,
+                "message": "Some ingredients are insufficient",
                 "insufficient_items": insufficient_items
             }), 400
 
-        # Success case
-        print("All ingredients are sufficient.")
+        # If all items are sufficient, update the inventory
+        for key, count in ingredient_counts.items():
+            item, item_type = key.split("-")
+            cursor.execute(
+                "UPDATE inventory SET quantity = quantity - ? WHERE item = ? AND type = ?",
+                (count, item, item_type),
+            )
+
+        db.commit()
+        db.close()
+
+        print("All ingredients are sufficient, inventory updated.")
         return jsonify({"success": True})
 
     except Exception as e:
         print("Error in /check_inventory:", str(e))
         return jsonify({"success": False, "message": str(e)}), 500
+
 
 
 

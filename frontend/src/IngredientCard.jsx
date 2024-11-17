@@ -77,6 +77,15 @@ const IngredientCard = ({
         const filteredIngredients = ingredients ? ingredients.filter((ingredient) => {
             return selectedIngredients[ingredient.item] === true;
         }) : [];
+
+        let toppings = filteredIngredients;
+
+        if (selectedCrust) {
+            filteredIngredients.push({ item: selectedCrust, type: "crust" });
+        }
+        if (selectedSauce) {
+            filteredIngredients.push({ item: selectedSauce, type: "sauce" });
+        }
     
         console.log("Filtered Ingredients:", filteredIngredients);
     
@@ -84,6 +93,7 @@ const IngredientCard = ({
             name: name,
             crust: selectedCrust,
             sauce: selectedSauce,
+            toppings: toppings,
             ingredients: filteredIngredients,
             price: p
         };
@@ -117,6 +127,40 @@ const IngredientCard = ({
                     availability[item] = false;
                 }
             }
+
+            for (const crustOption of crusts) {
+                try {
+                    const crustResponse = await fetch(
+                        `http://127.0.0.1:5000/validate_item?ingred_item=${encodeURIComponent(crustOption)}&ingred_type=crust`
+                    );
+                    const crustData = await crustResponse.json();
+                    availability[crustOption] = crustData.available;
+                } catch (error) {
+                    console.error(`Error checking availability for crust ${crustOption}:`, error);
+                    availability[crustOption] = false;
+                }
+            }
+
+            // Check availability for all sauces
+            for (const sauceOption of sauces) {
+                try {
+                    const sauceResponse = await fetch(
+                        `http://127.0.0.1:5000/validate_item?ingred_item=${encodeURIComponent(sauceOption)}&ingred_type=sauce`
+                    );
+                    const sauceData = await sauceResponse.json();
+                    availability[sauceOption] = sauceData.available;
+                } catch (error) {
+                    console.error(`Error checking availability for sauce ${sauceOption}:`, error);
+                    availability[sauceOption] = false;
+                }
+            }
+
+            if (availability[selectedCrust] === false) {
+                setSelectedCrust(crusts.find(c => availability[c] !== false) || "thick");
+            }
+            if (availability[selectedSauce] === false) {
+                setSelectedSauce(sauces.find(s => availability[s] !== false) || sauces[0]);
+            }
     
             setIngredientAvailability(availability);
             setSelectedIngredients(newSelectedIngredients); // Update selected ingredients state only if needed
@@ -135,38 +179,52 @@ const IngredientCard = ({
             <div className="mb-4">
                 <h3 className="font-medium text-lg">Choose Crust</h3>
                 <div>
-                    {crusts.map((crustOption) => (
-                        <label key={crustOption} className="block">
-                            <input
-                                type="radio"
-                                name="crust"
-                                value={crustOption}
-                                checked={selectedCrust === crustOption}
-                                onChange={handleCrustChange}
-                                className="mr-2"
-                            />
-                            {crustOption}
-                        </label>
-                    ))}
+                    {crusts.map((crustOption) => {
+                        const isCrustAvailable = ingredientAvailability[crustOption] !== false;
+                        return (
+                            <label
+                                key={crustOption}
+                                className={`block ${isCrustAvailable ? "" : "text-gray-500"}`}
+                            >
+                                <input
+                                    type="radio"
+                                    name="crust"
+                                    value={crustOption}
+                                    checked={selectedCrust === crustOption}
+                                    onChange={handleCrustChange}
+                                    disabled={!isCrustAvailable}
+                                    className="mr-2"
+                                />
+                                {crustOption}
+                            </label>
+                        );
+                    })}
                 </div>
             </div>
 
             <div className="mb-4">
                 <h3 className="font-medium text-lg">Choose Sauce</h3>
                 <div>
-                    {sauces.map((sauceOption) => (
-                        <label key={sauceOption} className="block">
-                            <input
-                                type="radio"
-                                name="sauce"
-                                value={sauceOption}
-                                checked={selectedSauce === sauceOption}
-                                onChange={handleSauceChange}
-                                className="mr-2"
-                            />
-                            {sauceOption}
-                        </label>
-                    ))}
+                    {sauces.map((sauceOption) => {
+                        const isSauceAvailable = ingredientAvailability[sauceOption] !== false;
+                        return (
+                            <label
+                                key={sauceOption}
+                                className={`block ${isSauceAvailable ? "" : "text-gray-500"}`}
+                            >
+                                <input
+                                    type="radio"
+                                    name="sauce"
+                                    value={sauceOption}
+                                    checked={selectedSauce === sauceOption}
+                                    onChange={handleSauceChange}
+                                    disabled={!isSauceAvailable}
+                                    className="mr-2"
+                                />
+                                {sauceOption}
+                            </label>
+                        );
+                    })}
                 </div>
             </div>
             </div>

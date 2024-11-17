@@ -11,8 +11,8 @@ customers = [
     ('sally', 'Salmon', 'Robby', 1112223344, 'fish@lake.co.uk', '800 Bob Drive, Durham NC 27712', '666655554444')
 ]
 inventory = [
-    ('thin', 'crust', 2), 
-    ('thick', 'crust', 10), 
+    ('thin', 'crust', 0), 
+    ('thick', 'crust', 0), 
     ('stuffed', 'specialty_crust', 10), 
     ('tomato', 'sauce', 10), 
     ('spicy', 'sauce', 0), 

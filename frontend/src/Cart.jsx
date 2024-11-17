@@ -57,7 +57,7 @@ const Cart = () => {
                                         name={item.name}
                                         crust={item.crust}
                                         sauce={item.sauce}
-                                        ingredients={item.ingredients}
+                                        ingredients={item.toppings}
                                         price={item.price}
                                     />
                                     <button
