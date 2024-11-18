@@ -19,7 +19,16 @@ function Login() {
             .then(data => {
                 if (data.found) {
                     login({ username });
-                    navigate("/order");
+                    if (data.status == "customer") {
+                        navigate("/order");
+                    } else if (data.status == "employee") {
+                        navigate("/employee/order")
+                    } else if (data.status == "manager") {
+                        navigate("/employee/inventory")
+                    } else {
+                        alert("No status detected for this user.");
+                    }
+                    
                 } else {
                     alert("Username or password is incorrect.");
                 }

@@ -17,10 +17,12 @@ def get_users():
     
     db = sqlite3.connect('pizza_rat.db')
     cursor = db.cursor()
-    cursor.execute("SELECT 1 FROM users WHERE username = ? AND password = ?", (username, password))
-    found = cursor.fetchone() is not None
+    cursor.execute("SELECT status FROM users WHERE username = ? AND password = ?", (username, password))
+    status = cursor.fetchone()
+    found = status is not None
+    
     db.close()
-    return jsonify({'found': found})
+    return jsonify({'found': found, 'status': status})
 
 @app.route("/pizzas", methods=["GET"])
 def get_pizzas():
@@ -178,7 +180,6 @@ def check_inventory():
                 "insufficient_items": insufficient_items
             }), 400
 
-        # If all items are sufficient, update the inventory
         for key, count in ingredient_counts.items():
             item, item_type = key.split("-")
             cursor.execute(
@@ -195,9 +196,55 @@ def check_inventory():
     except Exception as e:
         print("Error in /check_inventory:", str(e))
         return jsonify({"success": False, "message": str(e)}), 500
+    
+
+@app.route("/inventory", methods=["GET"])
+def get_full_inventory():
+    db = sqlite3.connect("pizza_rat.db")
+    cursor = db.cursor()
+    cursor.execute("SELECT item, type, quantity FROM inventory")
+    rows = cursor.fetchall()
+    db.close()
+
+    inventory = [
+        {"item": row[0], "type": row[1], "quantity": row[2]} for row in rows
+    ]
+
+    return jsonify(inventory)
 
 
+@app.route("/update_inventory", methods=["POST"])
+def update_inventory():
+    try:
+        # Parse the incoming data
+        data = request.json
+        item = data.get("item")
+        type_ = data.get("type")
+        quantity_to_add = int(data.get("quantity"))
 
+        # Validate input
+        if not item or not type_ or quantity_to_add <= 0:
+            return jsonify({"success": False, "message": "Invalid input"}), 400
+
+        # Connect to the database
+        db = sqlite3.connect("pizza_rat.db")
+        cursor = db.cursor()
+
+        # Update the inventory
+        cursor.execute(
+            "UPDATE inventory SET quantity = quantity + ? WHERE item = ? AND type = ?",
+            (quantity_to_add, item, type_),
+        )
+
+        # Commit the changes and close the connection
+        db.commit()
+        db.close()
+
+        return jsonify({"success": True, "message": "Inventory updated successfully"})
+
+    except Exception as e:
+        print(f"Error in /update_inventory: {e}")
+        return jsonify({"success": False, "message": str(e)}), 500
 
 
 if __name__ == "__main__":
