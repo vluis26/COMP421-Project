@@ -1,58 +1,44 @@
-import { useState } from 'react'
-import './App.css'
-import { Routes, Route, Link } from 'react-router-dom';
-import Order from './Order';
-import Banner from './Banner';
-import Contact from './Contact';
-import Catering from './Catering';
+import { useState } from "react";
+import "./App.css";
+import { Routes, Route, Link } from "react-router-dom";
+import HomePage from "./HomePage";
+import LoginPage from "./LoginPage";
+import CreateAccount from "./CreateAccount";
+import Order from "./Order";
+import Cart from "./Cart";
+import Extras from "./Extras";
+import EmployeeOrder from "./EmployeeOrder";
+import OrderTracker from "./OrderTracker";
+import Inventory from "./Inventory";
+import { useUser } from './UserContext';
+import { Navigate } from 'react-router-dom';
+
+
 
 function App() {
-  return (
-    <>
-    <div className='page'>
-      <Routes>
-        <Route path="/" element={
-          <>
-            <div>
-              <div><Banner/></div>
-              <div>
-                <div><h1>Weekly Specials</h1></div>
-                <ul>
-                  <li>deal A</li>
-                  <li>deal B</li>
-                  <li>deal C</li>
-                </ul>
-              </div>
-            </div>
-          </>
-        } />
-        <Route path="/order" element={
-          <>
-            <div className='page'>
-              <div><Banner/></div>
-              <div className='content'><Order /></div>
-            </div>
-          </>} />
-        <Route path="/contact" element={
-          <>
-            <div className='page'>
-              <div><Banner/></div>
-              <div className='content'><Contact/></div>
-            </div>
-          </>
-        }/>
-        <Route path="/catering" element={
-          <>
-            <div className='page'>
-              <div><Banner/></div>
-              <div className='content'><Catering/></div>
-            </div>
-          </>
-        }/>
-      </Routes>
-      </div>
-    </>
-  );
+    const ProtectedRoute = ({ children }) => {
+        const { user } = useUser();
+        if (!user) {
+            return <Navigate to="/login" />;
+        }
+        return children;
+    };
+    return (
+        <>
+            <Routes>
+                <Route path="/" element={<HomePage />} />
+                <Route path="/login" element={<LoginPage />} />
+                <Route path="/create" element={<CreateAccount />} />
+
+                <Route path="/order" element={<ProtectedRoute><Order /></ProtectedRoute>} />
+                <Route path="/cart" element={<Cart />} />
+                <Route path="/order/extras" element={<ProtectedRoute><Extras /></ProtectedRoute>} />
+                <Route path="/employee/order" element={<ProtectedRoute><EmployeeOrder /></ProtectedRoute>} />
+                <Route path="/orderTracker" element={<ProtectedRoute><OrderTracker /></ProtectedRoute>} />
+                <Route path="/employee/inventory" element={<ProtectedRoute><Inventory /></ProtectedRoute>} />
+            </Routes>
+        </>
+    );
 }
 
 export default App;
