@@ -24,6 +24,35 @@ def get_users():
     db.close()
     return jsonify({'found': found, 'status': status})
 
+@app.route("/create-account", methods=['POST'])
+def create_account():
+    data = request.get_json()
+    username = data.get('username')
+    password = data.get('password')
+
+    if not username or not password:
+        return jsonify({'error': 'Missing username or password'}), 400
+
+    db = sqlite3.connect('pizza_rat.db')
+    cursor = db.cursor()
+    
+    cursor.execute("SELECT * FROM users WHERE username = ?", (username,))
+    if cursor.fetchone():
+        db.close()
+        return jsonify({'error': 'Username already exists'}), 409
+
+    try:
+        cursor.execute("INSERT INTO users (username, password, status) VALUES (?, ?, ?)", 
+                       (username, password, 'customer'))
+        db.commit()
+    except Exception as e:
+        db.rollback()
+        db.close()
+        return jsonify({'error': f"Failed to create account: {str(e)}"}), 500
+
+    db.close()
+    return jsonify({'message': 'Account created successfully'}), 201
+
 @app.route("/pizzas", methods=["GET"])
 def get_pizzas():
     db = sqlite3.connect("pizza_rat.db")
