@@ -131,25 +131,25 @@ def is_ingredient_stocked():
 
 @app.route("/check_inventory", methods=["POST"])
 def check_inventory():
+    data = request.json
+    print("Received ingredient counts:", data)
+
+    if not data or "ingredientCounts" not in data:
+        print("Error: Missing ingredient counts in request")
+        return jsonify({
+            "success": False,
+            "message": "Missing ingredient counts",
+            "insufficient_items": []
+        }), 400
+
+    ingredient_counts = data["ingredientCounts"]
+    print("Processing ingredient counts:", ingredient_counts)
+
+    db = sqlite3.connect("pizza_rat.db")
+    cursor = db.cursor()
+    insufficient_items = []
+
     try:
-        data = request.json
-        print("Received ingredient counts:", data)
-
-        if not data or "ingredientCounts" not in data:
-            print("Error: Missing ingredient counts in request")
-            return jsonify({
-                "success": False,
-                "message": "Missing ingredient counts",
-                "insufficient_items": []
-            }), 400
-
-        ingredient_counts = data["ingredientCounts"]
-        print("Processing ingredient counts:", ingredient_counts)
-
-        db = sqlite3.connect("pizza_rat.db")
-        cursor = db.cursor()
-        insufficient_items = []
-
         for key, count in ingredient_counts.items():
             item, item_type = key.split("-")
             cursor.execute(
@@ -158,7 +158,6 @@ def check_inventory():
             )
             result = cursor.fetchone()
 
-            # Unpack result tuple and handle missing data
             available_quantity = result[0] if result else 0
             print(f"Checking {item} ({item_type}): Needed {count}, Found {available_quantity}")
 
@@ -170,7 +169,6 @@ def check_inventory():
                     "available": available_quantity
                 })
 
-        # If any items are insufficient, return the error response
         if insufficient_items:
             db.close()
             print("Insufficient items:", insufficient_items)
@@ -187,15 +185,17 @@ def check_inventory():
                 (count, item, item_type),
             )
 
-        db.commit()
-        db.close()
-
         print("All ingredients are sufficient, inventory updated.")
         return jsonify({"success": True})
 
     except Exception as e:
+        db.rollback()
         print("Error in /check_inventory:", str(e))
         return jsonify({"success": False, "message": str(e)}), 500
+    
+    finally:
+        db.commit()
+        db.close()
     
 
 @app.route("/inventory", methods=["GET"])
@@ -215,36 +215,32 @@ def get_full_inventory():
 
 @app.route("/update_inventory", methods=["POST"])
 def update_inventory():
+    data = request.json
+    item = data.get("item")
+    type_ = data.get("type")
+    quantity_to_add = int(data.get("quantity"))
+
+    if not item or not type_ or quantity_to_add <= 0:
+        return jsonify({"success": False, "message": "Invalid input"}), 400
+
+    db = sqlite3.connect("pizza_rat.db")
+    cursor = db.cursor()
+
     try:
-        # Parse the incoming data
-        data = request.json
-        item = data.get("item")
-        type_ = data.get("type")
-        quantity_to_add = int(data.get("quantity"))
-
-        # Validate input
-        if not item or not type_ or quantity_to_add <= 0:
-            return jsonify({"success": False, "message": "Invalid input"}), 400
-
-        # Connect to the database
-        db = sqlite3.connect("pizza_rat.db")
-        cursor = db.cursor()
-
-        # Update the inventory
         cursor.execute(
             "UPDATE inventory SET quantity = quantity + ? WHERE item = ? AND type = ?",
             (quantity_to_add, item, type_),
         )
-
-        # Commit the changes and close the connection
-        db.commit()
-        db.close()
-
         return jsonify({"success": True, "message": "Inventory updated successfully"})
 
     except Exception as e:
+        db.rollback()
         print(f"Error in /update_inventory: {e}")
         return jsonify({"success": False, "message": str(e)}), 500
+    
+    finally:
+        db.commit()
+        db.close()
 
 
 if __name__ == "__main__":
