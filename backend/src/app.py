@@ -358,7 +358,6 @@ def get_all_orders():
     db = sqlite3.connect("pizza_rat.db")
     cursor = db.cursor()
 
-    # Query to select all orders, ordered by most recent (most recent order first)
     cursor.execute("SELECT * FROM active_orders ORDER BY oid DESC")
     orders = cursor.fetchall()
 
