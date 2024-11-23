@@ -4,12 +4,13 @@ import Banner from "./Banner";
 import PizzaCard from "./PizzaCard";
 
 const Cart = () => {
-    const { cart, removeFromCart, ingredientCounts, clearCart } = useUser();
+    const { cart, removeFromCart, ingredientCounts, clearCart, user } = useUser();
     const totalPrice = cart.reduce((sum, item) => sum + parseFloat(item.price || 0), 0);
 
     const confirmOrder = async () => {
         try {
-            const response = await fetch("http://localhost:5000/check_inventory", {
+            // Step 1: Check inventory
+            const inventoryResponse = await fetch("http://localhost:5000/check_inventory", {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
@@ -17,12 +18,9 @@ const Cart = () => {
                 body: JSON.stringify({ ingredientCounts }),
             });
     
-            const data = await response.json();
-            if (response.ok) {
-                alert("Order confirmed! Ingredients are sufficient.");
-                clearCart();
-            } else {
-                const insufficientItems = data.insufficient_items || [];
+            const inventoryData = await inventoryResponse.json();
+            if (!inventoryResponse.ok) {
+                const insufficientItems = inventoryData.insufficient_items || [];
                 if (insufficientItems.length > 0) {
                     alert(
                         `Order failed. Insufficient ingredients: ${insufficientItems
@@ -30,14 +28,40 @@ const Cart = () => {
                             .join(", ")}`
                     );
                 } else {
-                    alert(`Order failed. Reason: ${data.message || "Unknown error."}`);
+                    alert(`Order failed. Reason: ${inventoryData.message || "Unknown error."}`);
                 }
+                return;
+            }
+    
+            // Step 2: Add order to active_orders
+            const orderData = {
+                customer_id: user.username,
+                quantity: cart.length,
+                price: totalPrice.toFixed(2),
+                status: "Queued",
+            };
+    
+            const orderResponse = await fetch("http://localhost:5000/active_orders", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify(orderData),
+            });
+    
+            const orderResult = await orderResponse.json();
+            if (orderResponse.ok) {
+                alert("Order confirmed and added to active orders!");
+                clearCart();
+            } else {
+                alert(`Failed to add order to active orders. Reason: ${orderResult.message}`);
             }
         } catch (error) {
             console.error("Error confirming order:", error);
             alert("An error occurred while confirming the order.");
         }
     };
+    
 
     return (
         <div className="w-screen h-full">

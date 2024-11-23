@@ -11,14 +11,14 @@ customers = [
     ('sally', 'Salmon', 'Robby', 1112223344, 'fish@lake.co.uk', '800 Bob Drive, Durham NC 27712', '666655554444')
 ]
 inventory = [
-    ('thin', 'crust', 0), 
-    ('thick', 'crust', 0), 
+    ('thin', 'crust', 5), 
+    ('thick', 'crust', 2), 
     ('stuffed', 'specialty_crust', 10), 
     ('tomato', 'sauce', 10), 
-    ('spicy', 'sauce', 0), 
+    ('spicy', 'sauce', 1), 
     ('pesto', 'sauce', 10), 
     ('alfredo', 'sauce', 10), 
-    ('mozzarella', 'cheese', 0), 
+    ('mozzarella', 'cheese', 5), 
     ('parmesan', 'cheese', 10), 
     ('cheddar', 'cheese', 10), 
     ('asiago', 'cheese', 10), 
@@ -86,17 +86,15 @@ cursor.execute('CREATE TABLE users (username TEXT PRIMARY KEY, password TEXT NOT
 cursor.execute('CREATE TABLE inventory (item_id INTEGER PRIMARY KEY, item TEXT, type TEXT, quantity INTEGER NOT NULL)')
 cursor.execute('CREATE TABLE prices (type TEXT PRIMARY KEY, price REAL)')
 cursor.execute('CREATE TABLE pizzas (pizza_name VARCHAR(40), item_id INTEGER, PRIMARY KEY(pizza_name, item_id))')
-cursor.execute('CREATE TABLE order_archive (oid INTEGER PRIMARY KEY, customer_id INTEGER, employee_id INTEGER, price REAL)')
-cursor.execute('CREATE TABLE active_orders (oid INTEGER PRIMARY KEY, customer_id INTEGER, employee_id INTEGER, retrieval VARCHAR(20), status VARCHAR(20), quantity INTEGER, price REAL)')
-cursor.execute('CREATE TABLE pizza_queue (pid INTEGER, oid INTEGER)')
-cursor.execute('CREATE TABLE pizza_ingreds (pid INTEGER, item_id INTEGER, PRIMARY KEY(pid, item_id))')
-cursor.execute('CREATE TABLE customers (username VARCHAR(20) PRIMARY KEY, customer_id INTEGER, first VARCHAR(20), last VARCHAR(20), phone INTEGER, email VARCHAR(100), address VARCHAR(100), card_number INTEGER)')
+cursor.execute('CREATE TABLE order_archive (oid VARCHAR(40) PRIMARY KEY, customer_id TEXT, employee_id INTEGER, price REAL)')
+cursor.execute('CREATE TABLE active_orders (oid VARCHAR(40) PRIMARY KEY, customer_id TEXT, quantity INTEGER, price REAL, status VARCHAR(20))')
+cursor.execute('CREATE TABLE customers (customer_id TEXT PRIMARY KEY, first VARCHAR(20), last VARCHAR(20), phone INTEGER, email VARCHAR(100), address VARCHAR(100), card_number INTEGER)')
 
 # Insert data into tables
 cursor.executemany('INSERT INTO users (username, password, status) VALUES (?, ?, ?)', users)
 cursor.executemany('INSERT INTO inventory (item, type, quantity) VALUES (?, ?, ?)', inventory)
 cursor.executemany('INSERT INTO prices (type, price) VALUES (?, ?)', prices)
-cursor.executemany('INSERT INTO customers (username, first, last, phone, email, address, card_number) values (?, ?, ?, ?, ?, ?, ?)', customers)
+cursor.executemany('INSERT INTO customers (customer_id, first, last, phone, email, address, card_number) values (?, ?, ?, ?, ?, ?, ?)', customers)
 for pizza in pizzas:
     for item_id in pizzas[pizza]:
         cursor.execute('INSERT INTO pizzas (pizza_name, item_id) values (?, ?)', (pizza, item_id))

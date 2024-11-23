@@ -1,4 +1,7 @@
 import sqlite3
+import random
+import string
+from datetime import datetime
 from flask import Flask, jsonify, request
 from flask_cors import CORS
 
@@ -149,35 +152,35 @@ def check_inventory():
     cursor = db.cursor()
     insufficient_items = []
 
+    for key, count in ingredient_counts.items():
+        item, item_type = key.split("-")
+        cursor.execute(
+            "SELECT quantity FROM inventory WHERE item = ? AND type = ?",
+            (item, item_type),
+        )
+        result = cursor.fetchone()
+
+        available_quantity = result[0] if result else 0
+        print(f"Checking {item} ({item_type}): Needed {count}, Found {available_quantity}")
+
+        if available_quantity < count:
+            insufficient_items.append({
+                "item": item,
+                "type": item_type,
+                "needed": count,
+                "available": available_quantity
+            })
+
+    if insufficient_items:
+        db.close()
+        print("Insufficient items:", insufficient_items)
+        return jsonify({
+            "success": False,
+            "message": "Some ingredients are insufficient",
+            "insufficient_items": insufficient_items
+        }), 400
+    
     try:
-        for key, count in ingredient_counts.items():
-            item, item_type = key.split("-")
-            cursor.execute(
-                "SELECT quantity FROM inventory WHERE item = ? AND type = ?",
-                (item, item_type),
-            )
-            result = cursor.fetchone()
-
-            available_quantity = result[0] if result else 0
-            print(f"Checking {item} ({item_type}): Needed {count}, Found {available_quantity}")
-
-            if available_quantity < count:
-                insufficient_items.append({
-                    "item": item,
-                    "type": item_type,
-                    "needed": count,
-                    "available": available_quantity
-                })
-
-        if insufficient_items:
-            db.close()
-            print("Insufficient items:", insufficient_items)
-            return jsonify({
-                "success": False,
-                "message": "Some ingredients are insufficient",
-                "insufficient_items": insufficient_items
-            }), 400
-
         for key, count in ingredient_counts.items():
             item, item_type = key.split("-")
             cursor.execute(
@@ -241,6 +244,115 @@ def update_inventory():
     finally:
         db.commit()
         db.close()
+
+
+@app.route("/active_orders", methods=["GET"])
+def get_active_orders():
+    db = sqlite3.connect("pizza_rat.db")
+    cursor = db.cursor()
+    cursor.execute("SELECT * FROM active_orders")
+    orders = [
+        {
+            "oid": row[0],
+            "customer_id": row[1],
+            "quantity": row[2],
+            "price": row[3],
+            "status": row[4],
+        } for row in cursor.fetchall()
+    ]
+    db.close()
+    return jsonify(orders)
+
+
+
+
+@app.route("/active_orders", methods=["POST"])
+def add_active_order():
+    data = request.json
+    required_fields = ["customer_id", "quantity", "price", "status"]
+
+    if not all(field in data for field in required_fields):
+        return jsonify({"success": False, "message": "Missing required fields"}), 400
+
+    # Generate a unique order ID
+    current_time = datetime.now().strftime("%Y%m%d%H%M%S")  # Format: YYYYMMDDHHMMSS
+    random_suffix = ''.join(random.choices(string.ascii_uppercase + string.digits, k=4))
+    unique_oid = f"{current_time}-{random_suffix}"
+
+    db = sqlite3.connect("pizza_rat.db")
+    cursor = db.cursor()
+
+    try:
+        cursor.execute(
+            "INSERT INTO active_orders (oid, customer_id, quantity, price, status) "
+            "VALUES (?, ?, ?, ?, ?)",
+            (unique_oid, data["customer_id"], data["quantity"], data["price"], data["status"]),
+        )
+        db.commit()
+        return jsonify({"success": True, "message": "Order added successfully", "oid": unique_oid})
+
+    except Exception as e:
+        db.rollback()
+        return jsonify({"success": False, "message": str(e)}), 500
+
+    finally:
+        db.close()
+
+
+
+@app.route("/active_orders/<oid>/status", methods=["PUT"])
+def update_active_order_status(oid):
+    data = request.json
+    new_status = data.get("status")
+
+    if not new_status:
+        return jsonify({"success": False, "message": "Status is required"}), 400
+
+    db = sqlite3.connect("pizza_rat.db")
+    cursor = db.cursor()
+
+    try:
+        cursor.execute("UPDATE active_orders SET status = ? WHERE oid = ?", (new_status, oid))
+        db.commit()
+        return jsonify({"success": True, "message": "Order status updated successfully"})
+
+    except Exception as e:
+        db.rollback()
+        return jsonify({"success": False, "message": str(e)}), 500
+    
+    finally:
+        db.close()
+
+
+@app.route("/archive_order/<oid>", methods=["POST"])
+def archive_order(oid):
+    db = sqlite3.connect("pizza_rat.db")
+    cursor = db.cursor()
+
+    try:
+        cursor.execute("SELECT * FROM active_orders WHERE oid = ?", (oid,))
+        order = cursor.fetchone()
+
+        if not order:
+            return jsonify({"success": False, "message": "Order not found"}), 404
+
+        cursor.execute(
+            "INSERT INTO order_archive (oid, customer_id, price) VALUES (?, ?, ?)",
+            (order[0], order[1], order[3]),
+        )
+
+        cursor.execute("DELETE FROM active_orders WHERE oid = ?", (oid,))
+        db.commit()
+        return jsonify({"success": True, "message": "Order archived successfully"})
+
+    except Exception as e:
+        db.rollback()
+        return jsonify({"success": False, "message": str(e)}), 500
+    
+    finally:
+        db.close()
+
+
 
 
 if __name__ == "__main__":
