@@ -71,41 +71,43 @@ const EmployeeOrder = () => {
         <div className="w-screen h-full">
             <Banner employee={true} />
             <div className="p-4">
-                <h1 className="text-2xl font-bold mb-4">Active Orders</h1>
-                <table className="w-full border-collapse border border-gray-300">
-                    <thead>
-                        <tr>
-                            <th className="border px-4 py-2">Order ID</th>
-                            <th className="border px-4 py-2">Customer</th>
-                            <th className="border px-4 py-2">Price</th>
-                            <th className="border px-4 py-2">Status</th>
-                            <th className="border px-4 py-2">Actions</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {orders.map((order) => (
-                            <tr key={order.oid}>
-                                <td className="border px-4 py-2">{order.oid}</td>
-                                <td className="border px-4 py-2">{order.customer_id}</td>
-                                <td className="border px-4 py-2">${order.price}</td>
-                                <td className="border px-4 py-2">{order.status}</td>
-                                <td className="border px-4 py-2">
-                                    <select
-                                        value={order.status}
-                                        onChange={(e) => handleStatusChange(order.oid, e.target.value)}
-                                        className="border px-2 py-1"
-                                    >
-                                        {statuses.map((status) => (
-                                            <option key={status} value={status}>
-                                                {status}
-                                            </option>
-                                        ))}
-                                    </select>
-                                </td>
+                <h1 className="text-3xl font-bold mb-6 text-center">Active Orders</h1>
+                <div className="flex justify-center">
+                    <table className="w-4/5 bg-white border-collapse border border-gray-300">
+                        <thead>
+                            <tr>
+                                <th className="border font-bold text-center px-4 py-2">Order ID</th>
+                                <th className="border text-center px-4 py-2">Customer</th>
+                                <th className="border text-center px-4 py-2">Price</th>
+                                <th className="border text-center px-4 py-2">Status</th>
+                                <th className="border text-center px-4 py-2">Actions</th>
                             </tr>
-                        ))}
-                    </tbody>
-                </table>
+                        </thead>
+                        <tbody>
+                            {orders.map((order) => (
+                                <tr key={order.oid} className="text-center">
+                                    <td className="border px-4 py-2">{order.oid}</td>
+                                    <td className="border px-4 py-2">{order.customer_id}</td>
+                                    <td className="border px-4 py-2">${order.price}</td>
+                                    <td className="border px-4 py-2">{order.status}</td>
+                                    <td className="border px-4 py-2">
+                                        <select
+                                            value={order.status}
+                                            onChange={(e) => handleStatusChange(order.oid, e.target.value)}
+                                            className="border px-2 py-1 rounded-lg"
+                                        >
+                                            {statuses.map((status) => (
+                                                <option key={status} value={status}>
+                                                    {status}
+                                                </option>
+                                            ))}
+                                        </select>
+                                    </td>
+                                </tr>
+                            ))}
+                        </tbody>
+                    </table>
+                </div>
             </div>
         </div>
     );

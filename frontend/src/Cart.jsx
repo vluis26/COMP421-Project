@@ -67,7 +67,7 @@ const Cart = () => {
         <div className="w-screen h-full">
             <Banner />
             <div>
-                <div className="font-bold text-2xl m-5">Your order:</div>
+                <div className="font-bold text-3xl mx-5">Your cart</div>
                 {cart.length === 0 ? (
                     <div className="text-center text-gray-500 text-lg">
                         No items in your cart yet!

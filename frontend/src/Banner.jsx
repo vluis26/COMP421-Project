@@ -13,10 +13,18 @@ const Banner = ({ employee }) => {
         navigate("/Cart");
     };
     const handleHomeClick = () => {
-        navigate("/order");
+        if (employee) {
+            navigate("/employee/inventory");
+        } else {
+            navigate("/order");
+        } 
     };
     const handleTruckClick = () => {
-        navigate("/orderTracker");
+        if (employee) {
+            navigate("/employee/order");
+        } else {
+            navigate("/orderTracker");
+        }  
     };
     const handleLogout = () => {
         logout();
@@ -51,7 +59,7 @@ const Banner = ({ employee }) => {
                             />
                         </div>
                     )}
-                    {/* Display username and logout button if user is logged in */}
+
                 {user && (
                     <div className="flex items-center space-x-4 mx-8">
                         <span className="text-yellow-200 font-bold">{user.username}</span>

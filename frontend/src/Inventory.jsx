@@ -16,22 +16,22 @@ const Item = ({ item, type, quantity, price, onPurchase }) => {
 
     return (
         <tr>
-            <td className="border">{item}</td>
-            <td className="border">{type}</td>
-            <td className="border">{quantity}</td>
-            <td className="border ">${price.toFixed(2)}</td>
-            <td className="border ">
-                <form className="flex justify-around" onSubmit={handleSubmit}>
+            <td className="border px-4 py-2">{item}</td>
+            <td className="border px-4 py-2">{type}</td>
+            <td className="border px-4 py-2">{quantity}</td>
+            <td className="border px-4 py-2">${price.toFixed(2)}</td>
+            <td className="border px-4 py-2">
+                <form className="flex justify-center" onSubmit={handleSubmit}>
                     <input
                         type="number"
                         name="quantity"
-                        className="border border-black mr-2"
+                        className="border border-black mr-2 px-2"
                         value={inputQuantity}
                         onChange={(e) => setInputQuantity(e.target.value)}
                     />
                     <input
                         type="submit"
-                        value="purchase"
+                        value="Purchase"
                         className="rounded-xl bg-emerald-500 px-5 hover:cursor-pointer text-white"
                     />
                 </form>
@@ -91,22 +91,22 @@ const Inventory = () => {
     return (
         <div className="w-screen h-full">
             <Banner employee={true} />
-            <div className="font-bold text-3xl">Store inventory</div>
+            <div className="font-bold text-3xl text-center my-5">Store Inventory</div>
             <div className="flex justify-center my-5">
-                <table className="w-4/5 bg-white">
+                <table className="w-4/5 bg-white border-collapse">
                     <thead>
                         <tr>
-                            <th className="border font-bold text-center">Item</th>
-                            <th className="border text-center">Type</th>
-                            <th className="border text-center">Quantity</th>
-                            <th className="border text-center">Price</th>
-                            <th className="border text-center">Add items</th>
+                            <th className="border px-4 py-2 font-bold text-center">Item</th>
+                            <th className="border px-4 py-2 text-center">Type</th>
+                            <th className="border px-4 py-2 text-center">Quantity</th>
+                            <th className="border px-4 py-2 text-center">Price</th>
+                            <th className="border px-4 py-2 text-center">Add items</th>
                         </tr>
                     </thead>
                     <tbody>
                         {loading ? (
                             <tr>
-                                <td colSpan="5" className="text-center">
+                                <td colSpan="5" className="text-center py-4">
                                     Loading...
                                 </td>
                             </tr>

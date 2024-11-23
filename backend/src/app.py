@@ -353,6 +353,34 @@ def archive_order(oid):
         db.close()
 
 
+@app.route("/orders", methods=["GET"])
+def get_all_orders():
+    db = sqlite3.connect("pizza_rat.db")
+    cursor = db.cursor()
+
+    # Query to select all orders, ordered by most recent (most recent order first)
+    cursor.execute("SELECT * FROM active_orders ORDER BY oid DESC")
+    orders = cursor.fetchall()
+
+    db.close()
+
+    if orders:
+        order_list = []
+        for order in orders:
+            order_data = {
+                "oid": order[0],  # Order ID
+                "customer_id": order[1],  # Customer ID
+                "quantity": order[2],  # Quantity
+                "price": order[3],  # Price
+                "status": order[4],  # Status
+            }
+            order_list.append(order_data)
+
+        return jsonify(order_list)
+    else:
+        return jsonify({"error": "No active orders found"}), 404
+
+
 
 
 if __name__ == "__main__":
