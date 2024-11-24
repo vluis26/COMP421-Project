@@ -1,4 +1,5 @@
 import sqlite3
+import bcrypt
 from flask import Flask, jsonify, request
 from flask_cors import CORS
 
@@ -22,6 +23,12 @@ def get_users():
     found = status is not None
     
     db.close()
+    # secure password code
+    # hashed_password, status = row
+    # if bcrypt.checkpw(password.encode('utf-8'), hashed_password):
+    #     return jsonify({'found': True, 'status': status}), 200
+    # else:
+    #     return jsonify({'found': False, 'error': 'Invalid username or password'}), 401
     return jsonify({'found': found, 'status': status})
 
 @app.route("/create-account", methods=['POST'])
@@ -41,6 +48,9 @@ def create_account():
         db.close()
         return jsonify({'error': 'Username already exists'}), 409
 
+    # secure password code
+    # simply replace password in the INSERT command to be hashed_password
+    # hashed_password = bcrypt.hashpw(password.encode('utf-8'), bcrypt.gensalt())
     try:
         cursor.execute("INSERT INTO users (username, password, status) VALUES (?, ?, ?)", 
                        (username, password, 'customer'))
