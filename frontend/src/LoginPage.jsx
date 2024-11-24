@@ -13,32 +13,34 @@ function Login() {
     const handleSubmit = (event) => {
         event.preventDefault();
         console.log("Logging in with:", { username, password });
-    
-        fetch(`http://localhost:5000/users?username=${encodeURIComponent(username)}&password=${encodeURIComponent(password)}`)
-            .then(response => response.json())
-            .then(data => {
+
+        fetch(
+            `http://127.0.0.1:5000/users?username=${encodeURIComponent(
+                username
+            )}&password=${encodeURIComponent(password)}`
+        )
+            .then((response) => response.json())
+            .then((data) => {
                 if (data.found) {
                     login({ username });
                     if (data.status == "customer") {
                         navigate("/order");
                     } else if (data.status == "employee") {
-                        navigate("/employee/order")
+                        navigate("/employee/order");
                     } else if (data.status == "manager") {
-                        navigate("/employee/inventory")
+                        navigate("/employee/inventory");
                     } else {
                         alert("No status detected for this user.");
                     }
-                    
                 } else {
                     alert("Username or password is incorrect.");
                 }
             })
-            .catch(error => {
+            .catch((error) => {
                 console.error("Error during login:", error);
                 alert("An error occurred. Please try again.");
             });
     };
-    
 
     return (
         <div className="flex flex-col justify-center w-screen h-full bg-gradient-to-b from-red-600 to-red-800">

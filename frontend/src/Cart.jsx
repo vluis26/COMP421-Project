@@ -1,22 +1,28 @@
 import React from "react";
-import { useUser } from './UserContext';
+import { useUser } from "./UserContext";
 import Banner from "./Banner";
 import PizzaCard from "./PizzaCard";
 
 const Cart = () => {
     const { cart, removeFromCart, ingredientCounts, clearCart } = useUser();
-    const totalPrice = cart.reduce((sum, item) => sum + parseFloat(item.price || 0), 0);
+    const totalPrice = cart.reduce(
+        (sum, item) => sum + parseFloat(item.price || 0),
+        0
+    );
 
     const confirmOrder = async () => {
         try {
-            const response = await fetch("http://localhost:5000/check_inventory", {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                },
-                body: JSON.stringify({ ingredientCounts }),
-            });
-    
+            const response = await fetch(
+                "http://127.0.0.1:5000/check_inventory",
+                {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                    },
+                    body: JSON.stringify({ ingredientCounts }),
+                }
+            );
+
             const data = await response.json();
             if (response.ok) {
                 alert("Order confirmed! Ingredients are sufficient.");
@@ -26,11 +32,18 @@ const Cart = () => {
                 if (insufficientItems.length > 0) {
                     alert(
                         `Order failed. Insufficient ingredients: ${insufficientItems
-                            .map(item => `${item.item} (${item.type}): Needed ${item.needed}, Available ${item.available}`)
+                            .map(
+                                (item) =>
+                                    `${item.item} (${item.type}): Needed ${item.needed}, Available ${item.available}`
+                            )
                             .join(", ")}`
                     );
                 } else {
-                    alert(`Order failed. Reason: ${data.message || "Unknown error."}`);
+                    alert(
+                        `Order failed. Reason: ${
+                            data.message || "Unknown error."
+                        }`
+                    );
                 }
             }
         } catch (error) {
@@ -52,7 +65,10 @@ const Cart = () => {
                     <>
                         <div className="grid grid-cols-4 gap-5">
                             {cart.map((item, index) => (
-                                <div key={index} className="flex flex-col items-center">
+                                <div
+                                    key={index}
+                                    className="flex flex-col items-center"
+                                >
                                     <PizzaCard
                                         name={item.name}
                                         crust={item.crust}
@@ -71,11 +87,16 @@ const Cart = () => {
                         </div>
                         <div className="flex justify-center items-baseline">
                             <p className="font-bold text-xl ml-5 mt-3 text-center">
-                                Total: ${isNaN(totalPrice) ? 0 : Number(totalPrice).toFixed(2)}
+                                Total: $
+                                {isNaN(totalPrice)
+                                    ? 0
+                                    : Number(totalPrice).toFixed(2)}
                             </p>
-                            <button className="bg-emerald-700 text-white rounded-xl m-5 px-5 py-2 hover:text-emerald-700
+                            <button
+                                className="bg-emerald-700 text-white rounded-xl m-5 px-5 py-2 hover:text-emerald-700
                                 hover:bg-white font-semibold hover:border-emerald-700 border-2"
-                                onClick={confirmOrder}>
+                                onClick={confirmOrder}
+                            >
                                 Confirm order
                             </button>
                         </div>
