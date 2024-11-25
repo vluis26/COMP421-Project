@@ -1,6 +1,6 @@
 import Banner from "./Banner";
 import { useEffect, useState } from "react";
-import axios from 'axios'; // Importing Axios
+import axios from "axios"; // Importing Axios
 
 const OrderTrackerCard = ({ oid, quantity, price, status }) => {
     if (!status) {
@@ -33,7 +33,8 @@ const OrderTrackerCard = ({ oid, quantity, price, status }) => {
                         className="h-2 rounded-full"
                         style={{
                             width: `${progressPercent}%`,
-                            background: "linear-gradient(to right, #fefb72, #f0bb31)",
+                            background:
+                                "linear-gradient(to right, #fefb72, #f0bb31)",
                         }}
                     ></div>
                 </div>
@@ -55,7 +56,9 @@ const OrderTracker = () => {
     useEffect(() => {
         const fetchOrders = async () => {
             try {
-                const response = await axios.get("http://localhost:5000/orders"); // Endpoint for all orders
+                const response = await axios.get(
+                    "http://127.0.0.1:5000/orders"
+                ); // Endpoint for all orders
                 if (response.data) {
                     setOrders(response.data);
                 } else {

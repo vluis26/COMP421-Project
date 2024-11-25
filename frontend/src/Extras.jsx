@@ -17,7 +17,9 @@ const Extras = () => {
     useEffect(() => {
         const fetchCrustsAndSauces = async () => {
             try {
-                const response = await fetch("http://localhost:5000/crusts_and_sauces");
+                const response = await fetch(
+                    "http://127.0.0.1:5000/crusts_and_sauces"
+                );
                 const data = await response.json();
                 setCrusts(data.crusts);
                 setSauces(data.sauces);
@@ -47,7 +49,10 @@ const Extras = () => {
                             name={name || "null"}
                             crust={crust || "null"}
                             sauce={sauce || "null"}
-                            ingredients={ingredients || "error pizza has no ingredients :("}
+                            ingredients={
+                                ingredients ||
+                                "error pizza has no ingredients :("
+                            }
                             price={price || 0.99}
                         />
                         <div className="m-5">
@@ -55,7 +60,10 @@ const Extras = () => {
                                 name={name || "null"}
                                 crust={crust || "null"}
                                 sauce={sauce || "null"}
-                                ingredients={ingredients || "error pizza has no ingredients :("}
+                                ingredients={
+                                    ingredients ||
+                                    "error pizza has no ingredients :("
+                                }
                                 price={price || 0.99}
                                 crusts={crusts}
                                 sauces={sauces}

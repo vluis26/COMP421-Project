@@ -46,7 +46,7 @@ const Inventory = () => {
 
     useEffect(() => {
         // Fetch inventory data from backend
-        fetch("http://localhost:5000/inventory")
+        fetch("http://127.0.0.1:5000/inventory")
             .then((response) => response.json())
             .then((data) => {
                 setInventory(data);
@@ -60,25 +60,30 @@ const Inventory = () => {
 
     const handlePurchase = async (item, type, quantity) => {
         try {
-            const response = await fetch("http://localhost:5000/update_inventory", {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({
-                    item,
-                    type,
-                    quantity: parseInt(quantity, 10),
-                }),
-            });
+            const response = await fetch(
+                "http://127.0.0.1:5000/update_inventory",
+                {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({
+                        item,
+                        type,
+                        quantity: parseInt(quantity, 10),
+                    }),
+                }
+            );
 
             const data = await response.json();
 
             if (data.success) {
                 alert(data.message);
                 // Refresh inventory after purchase
-                fetch("http://localhost:5000/inventory")
+                fetch("http://127.0.0.1:5000/inventory")
                     .then((response) => response.json())
                     .then((data) => setInventory(data))
-                    .catch((error) => console.error("Error refreshing inventory:", error));
+                    .catch((error) =>
+                        console.error("Error refreshing inventory:", error)
+                    );
             } else {
                 alert(data.message || "Failed to update inventory.");
             }
@@ -91,16 +96,28 @@ const Inventory = () => {
     return (
         <div className="w-screen h-full">
             <Banner employee={true} />
-            <div className="font-bold text-3xl text-center my-5">Store Inventory</div>
+            <div className="font-bold text-3xl text-center my-5">
+                Store Inventory
+            </div>
             <div className="flex justify-center my-5">
                 <table className="w-4/5 bg-white border-collapse">
                     <thead>
                         <tr>
-                            <th className="border px-4 py-2 font-bold text-center">Item</th>
-                            <th className="border px-4 py-2 text-center">Type</th>
-                            <th className="border px-4 py-2 text-center">Quantity</th>
-                            <th className="border px-4 py-2 text-center">Price</th>
-                            <th className="border px-4 py-2 text-center">Add items</th>
+                            <th className="border px-4 py-2 font-bold text-center">
+                                Item
+                            </th>
+                            <th className="border px-4 py-2 text-center">
+                                Type
+                            </th>
+                            <th className="border px-4 py-2 text-center">
+                                Quantity
+                            </th>
+                            <th className="border px-4 py-2 text-center">
+                                Price
+                            </th>
+                            <th className="border px-4 py-2 text-center">
+                                Add items
+                            </th>
                         </tr>
                     </thead>
                     <tbody>
