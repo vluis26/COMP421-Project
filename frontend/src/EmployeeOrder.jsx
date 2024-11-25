@@ -41,7 +41,7 @@ const EmployeeOrder = () => {
                 );
 
                 // Archive the order if the new status is "Ready"
-                if (newStatus === "Ready") {
+                /*if (newStatus === "Ready") {
                     const archiveResponse = await fetch(
                         `http://127.0.0.1:5000/archive_order/${oid}`,
                         {
@@ -64,7 +64,7 @@ const EmployeeOrder = () => {
                             await archiveResponse.text()
                         );
                     }
-                }
+                }*/
             } else {
                 console.error(
                     "Failed to update status:",

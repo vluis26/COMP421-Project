@@ -99,6 +99,30 @@ for pizza in pizzas:
     for item_id in pizzas[pizza]:
         cursor.execute('INSERT INTO pizzas (pizza_name, item_id) values (?, ?)', (pizza, item_id))
 
+# Create the trigger (each SQL statement on its own)
+cursor.execute("""
+    CREATE TRIGGER IF NOT EXISTS archive_order
+    AFTER UPDATE ON active_orders
+    FOR EACH ROW
+    BEGIN
+        -- Insert the order into order_archive
+        INSERT INTO order_archive (oid, customer_id, employee_id, price)
+        SELECT NEW.oid, NEW.customer_id, 1, NEW.price
+        WHERE NEW.status = 'Ready';
+    END;
+""")
+
+cursor.execute("""
+    CREATE TRIGGER IF NOT EXISTS archive_order_delete
+    AFTER UPDATE ON active_orders
+    FOR EACH ROW
+    BEGIN
+        DELETE FROM active_orders
+        WHERE oid = NEW.oid AND NEW.status = 'Ready';
+    END;
+""")
+
+
 # Commit changes and close the database connection
 db.commit()
 db.close()
