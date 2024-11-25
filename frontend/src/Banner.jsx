@@ -1,27 +1,34 @@
 import { useState } from "react";
 import bigRatBanner from "./assets/big_rat_banner.svg";
-import menuIcon2 from "./assets/menu_icon_white.svg";
-import menuIcon from "./assets/menu_icon_gray.svg";
-import cartIcon from "./assets/cart_icon_gray.svg";
-import cartIcon2 from "./assets/cart_icon_white.svg";
-import personIcon from "./assets/person_icon_gray.svg";
-import personIcon2 from "./assets/person_icon_white.svg";
 import { Truck } from "lucide-react";
 import { ShoppingCart } from "lucide-react";
 import "./Banner.css";
-import { Link } from "react-router-dom";
 import { useNavigate } from "react-router-dom";
+import { useUser } from "./UserContext";
 
 const Banner = ({ employee }) => {
     const navigate = useNavigate();
+    const { user, logout } = useUser();
     const handleCartClick = () => {
         navigate("/Cart");
     };
     const handleHomeClick = () => {
-        navigate("/order");
+        if (employee) {
+            navigate("/employee/inventory");
+        } else {
+            navigate("/order");
+        } 
     };
     const handleTruckClick = () => {
-        navigate("/orderTracker");
+        if (employee) {
+            navigate("/employee/order");
+        } else {
+            navigate("/orderTracker");
+        }  
+    };
+    const handleLogout = () => {
+        logout();
+        navigate("/login");
     };
     return (
         <>
@@ -52,6 +59,18 @@ const Banner = ({ employee }) => {
                             />
                         </div>
                     )}
+
+                {user && (
+                    <div className="flex items-center space-x-4 mx-8">
+                        <span className="text-yellow-200 font-bold">{user.username}</span>
+                        <button
+                            onClick={handleLogout}
+                            className="bg-yellow-500 text-white px-4 py-2 rounded-full hover:bg-yellow-600"
+                        >
+                            Logout
+                        </button>
+                    </div>
+                )}
                 </div>
             </div>
         </>

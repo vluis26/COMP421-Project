@@ -1,6 +1,6 @@
 import cartoonPizza from "./assets/cartoon_pizza.png";
 import { useState } from "react";
-const PizzaCard = ({ name, ingredients, price, employee }) => {
+const PizzaCard = ({ name, crust, sauce, ingredients, price, employee }) => {
     const [status, setStatus] = useState("preparing");
     //TODO add a function to change the status of the order in the database
     const handleStatusChange = (event) => {
@@ -10,12 +10,23 @@ const PizzaCard = ({ name, ingredients, price, employee }) => {
         <div className="shadow-md rounded-xl p-10 bg-slate-100 w-80">
             <img src={cartoonPizza} className="w-64" />
             <p className="font-bold text-3xl">{name}</p>
-            Ingredients:
-            <span className="italic">
-                {ingredients}
-                <br />
-            </span>
-            <span className="italic">${price}</span>
+            <div className="text-lg text-gray-700 mt-2">
+                <p><strong>Crust:</strong> {crust}</p>
+                <p><strong>Sauce:</strong> {sauce}</p>
+                <p><strong>Toppings:</strong></p>
+                {ingredients.length === 0 ? (
+                    <p>No toppings</p>
+                ) : (
+                    <ul>
+                        {ingredients.map((ingredient, index) => (
+                            <li key={index}>
+                                {ingredient.item}
+                            </li>
+                        ))}
+                    </ul>
+                )}
+            </div>
+            
             {employee && (
                 <div>
                     <div className="flex flex-col justify-center">

@@ -9,9 +9,7 @@ function Order() {
         const fetchPizzas = async () => {
             try {
                 const response = await fetch("http://127.0.0.1:5000/pizzas");
-    
                 const text = await response.text();
-                console.log("Raw response text:", text);
     
                 try {
                     const data = JSON.parse(text);
@@ -39,13 +37,16 @@ function Order() {
                         Choose your meal...
                     </h1>
                     <div className="p-5 grid grid-cols-3">
-                        {/* Loop through pizza keys */}
-                        {Object.keys(pizzas).map((pizzaName, index) => (
+                        {Object.entries(pizzas).map(([pizzaName, pizzaData], index) => (
                             <Pizza
                                 key={index}
-                                name={pizzaName}
-                                ingredients={pizzas[pizzaName].map(item => item.item).join(", ")} 
-                                price={10.99} // Use your price logic here
+                                name={pizzaName.replaceAll("_", " ").toUpperCase()}
+                                crust={pizzaData.crust}
+                                sauce={pizzaData.sauce}
+                                ingredients={pizzaData.ingredients}
+                                ingredientsString={pizzaData.ingredients.map(item => item.item).join(", ")} 
+                                price={pizzaData.price}
+                                base_price={pizzaData.base_price}
                             />
                         ))}
                     </div>

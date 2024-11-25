@@ -10,8 +10,19 @@ import Extras from "./Extras";
 import EmployeeOrder from "./EmployeeOrder";
 import OrderTracker from "./OrderTracker";
 import Inventory from "./Inventory";
+import { useUser } from './UserContext';
+import { Navigate } from 'react-router-dom';
+
+
 
 function App() {
+    const ProtectedRoute = ({ children }) => {
+        const { user } = useUser();
+        if (!user) {
+            return <Navigate to="/login" />;
+        }
+        return children;
+    };
     return (
         <>
             <Routes>
@@ -19,12 +30,12 @@ function App() {
                 <Route path="/login" element={<LoginPage />} />
                 <Route path="/create" element={<CreateAccount />} />
 
-                <Route path="/order" element={<Order />} />
+                <Route path="/order" element={<ProtectedRoute><Order /></ProtectedRoute>} />
                 <Route path="/cart" element={<Cart />} />
-                <Route path="/order/extras" element={<Extras />} />
-                <Route path="/employee/order" element={<EmployeeOrder />} />
-                <Route path="/orderTracker" element={<OrderTracker />} />
-                <Route path="/employee/inventory" element={<Inventory />} />
+                <Route path="/order/extras" element={<ProtectedRoute><Extras /></ProtectedRoute>} />
+                <Route path="/employee/order" element={<ProtectedRoute><EmployeeOrder /></ProtectedRoute>} />
+                <Route path="/orderTracker" element={<ProtectedRoute><OrderTracker /></ProtectedRoute>} />
+                <Route path="/employee/inventory" element={<ProtectedRoute><Inventory /></ProtectedRoute>} />
             </Routes>
         </>
     );

@@ -2,11 +2,14 @@ import { useState } from "react";
 import "./Login.css";
 import ratIcon from "./assets/person_icon_white.svg";
 import { useNavigate } from "react-router-dom";
+import { useUser } from "./UserContext";
 
 function Login() {
     const [username, setUsername] = useState("");
     const [password, setPassword] = useState("");
     const navigate = useNavigate();
+    const { login } = useUser();
+
     const handleSubmit = (event) => {
         event.preventDefault();
         console.log("Logging in with:", { username, password });
@@ -19,7 +22,17 @@ function Login() {
             .then((response) => response.json())
             .then((data) => {
                 if (data.found) {
-                    navigate("/order");
+                    login({ username });
+                    if (data.status == "customer") {
+                        navigate("/order");
+                    } else if (data.status == "employee") {
+                        navigate("/employee/order")
+                    } else if (data.status == "manager") {
+                        navigate("/employee/inventory")
+                    } else {
+                        alert("No status detected for this user.");
+                    }
+                    
                 } else {
                     alert("Username or password is incorrect.");
                 }
